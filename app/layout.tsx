@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 import SecurityProvider from '@/components/SecurityProvider'
 import Navbar from '@/components/Navbar'
@@ -31,22 +32,24 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <head>
-        <meta name="robots" content="noindex, nofollow" />
-        <meta httpEquiv="X-Frame-Options" content="DENY" />
-        <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-        <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
-      </head>
-      <body className={inter.className}>
-        <SecurityProvider>
-          <Navbar />
-          <main className="min-h-screen">
-            {children}
-          </main>
-          <Footer />
-        </SecurityProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <head>
+          <meta name="robots" content="noindex, nofollow" />
+          <meta httpEquiv="X-Frame-Options" content="DENY" />
+          <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
+          <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
+        </head>
+        <body className={inter.className}>
+          <SecurityProvider>
+            <Navbar />
+            <main className="min-h-screen">
+              {children}
+            </main>
+            <Footer />
+          </SecurityProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }

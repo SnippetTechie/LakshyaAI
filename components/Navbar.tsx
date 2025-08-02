@@ -1,8 +1,10 @@
 'use client'
 import Link from 'next/link'
 import { User } from 'lucide-react'
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton, useUser } from '@clerk/nextjs'
 
 const Navbar = () => {
+  const { isLoaded } = useUser()
 
   return (
     <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-md z-50 border-b border-gray-200">
@@ -42,25 +44,69 @@ const Navbar = () => {
               >
                 About
               </Link>
-              <Link
-                href="/login"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2"
-              >
-                <User size={16} />
-                Login
-              </Link>
+              {/* Authentication Buttons */}
+              <div className="flex items-center gap-3">
+                {!isLoaded ? (
+                  <div className="flex items-center gap-3">
+                    <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
+                    <div className="w-20 h-8 bg-gray-200 rounded animate-pulse"></div>
+                  </div>
+                ) : (
+                  <>
+                    <SignedOut>
+                      <SignInButton mode="modal">
+                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2">
+                          <User size={16} />
+                          Login
+                        </button>
+                      </SignInButton>
+                    </SignedOut>
+                    <SignedIn>
+                      <Link
+                        href="/dashboard"
+                        className="text-gray-600 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
+                      >
+                        Dashboard
+                      </Link>
+                      <UserButton
+                        appearance={{
+                          elements: {
+                            avatarBox: "w-8 h-8"
+                          }
+                        }}
+                      />
+                    </SignedIn>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Mobile Login Button */}
+          {/* Mobile Authentication */}
           <div className="md:hidden">
-            <Link
-              href="/login"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2"
-            >
-              <User size={16} />
-              Login
-            </Link>
+            {!isLoaded ? (
+              <div className="w-20 h-8 bg-gray-200 rounded animate-pulse"></div>
+            ) : (
+              <>
+                <SignedOut>
+                  <SignInButton mode="modal">
+                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center gap-2">
+                      <User size={16} />
+                      Login
+                    </button>
+                  </SignInButton>
+                </SignedOut>
+                <SignedIn>
+                  <UserButton
+                    appearance={{
+                      elements: {
+                        avatarBox: "w-8 h-8"
+                      }
+                    }}
+                  />
+                </SignedIn>
+              </>
+            )}
           </div>
         </div>
 
