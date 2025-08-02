@@ -4,36 +4,44 @@ import { useEffect } from 'react'
 
 export default function SecurityProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    // Only apply security measures in production
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('🔧 SecurityProvider: Disabled in development mode')
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    const isProduction = process.env.NODE_ENV === 'production'
+
+    if (isDevelopment) {
+      console.log('🔧 SecurityProvider: Development mode - DevTools enabled')
+      console.log('🛡️ Production security will activate when deployed')
       return
     }
-    // Disable right-click context menu
-    const disableRightClick = (e: MouseEvent) => {
-      e.preventDefault()
-      return false
-    }
 
-    // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
-    const disableDevTools = (e: KeyboardEvent) => {
-      if (
-        e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey && e.key === 'I') ||
-        (e.ctrlKey && e.shiftKey && e.key === 'J') ||
-        (e.ctrlKey && e.key === 'U') ||
-        (e.ctrlKey && e.shiftKey && e.key === 'C')
-      ) {
+    // PRODUCTION ONLY: Security measures
+    if (isProduction) {
+      console.log('🔒 Production Security Active')
+
+      // Disable right-click context menu
+      const disableRightClick = (e: MouseEvent) => {
         e.preventDefault()
         return false
       }
-    }
 
-    // Disable text selection
-    const disableSelection = () => {
-      document.onselectstart = () => false
-      document.ondragstart = () => false
-    }
+      // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+      const disableDevTools = (e: KeyboardEvent) => {
+        if (
+          e.key === 'F12' ||
+          (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+          (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+          (e.ctrlKey && e.key === 'U') ||
+          (e.ctrlKey && e.shiftKey && e.key === 'C')
+        ) {
+          e.preventDefault()
+          return false
+        }
+      }
+
+      // Disable text selection in production
+      const disableSelection = () => {
+        document.onselectstart = () => false
+        document.ondragstart = () => false
+      }
 
     // Clear console periodically in production
     const clearConsole = () => {
@@ -87,20 +95,21 @@ export default function SecurityProvider({ children }: { children: React.ReactNo
       }
     }
 
-    // Initialize security measures
-    document.addEventListener('contextmenu', disableRightClick)
-    document.addEventListener('keydown', disableDevTools)
-    disableSelection()
-    clearConsole()
-    detectDevTools()
-    overrideConsole()
+      // Initialize security measures
+      document.addEventListener('contextmenu', disableRightClick)
+      document.addEventListener('keydown', disableDevTools)
+      disableSelection()
+      clearConsole()
+      detectDevTools()
+      overrideConsole()
 
-    // Cleanup
-    return () => {
-      document.removeEventListener('contextmenu', disableRightClick)
-      document.removeEventListener('keydown', disableDevTools)
-      document.onselectstart = null
-      document.ondragstart = null
+      // Cleanup
+      return () => {
+        document.removeEventListener('contextmenu', disableRightClick)
+        document.removeEventListener('keydown', disableDevTools)
+        document.onselectstart = null
+        document.ondragstart = null
+      }
     }
   }, [])
 
