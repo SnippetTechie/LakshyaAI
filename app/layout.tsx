@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import SecurityProvider from '@/components/SecurityProvider'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 
@@ -31,12 +32,20 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="robots" content="noindex, nofollow" />
+        <meta httpEquiv="X-Frame-Options" content="DENY" />
+        <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
+        <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
+      </head>
       <body className={inter.className}>
-        <Navbar />
-        <main className="min-h-screen">
-          {children}
-        </main>
-        <Footer />
+        <SecurityProvider>
+          <Navbar />
+          <main className="min-h-screen">
+            {children}
+          </main>
+          <Footer />
+        </SecurityProvider>
       </body>
     </html>
   )
