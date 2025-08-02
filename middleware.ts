@@ -22,7 +22,7 @@ export default clerkMiddleware(async (auth, request) => {
   // Add CSP header for additional security (updated for Clerk)
   response.headers.set(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://clerk.com https://*.clerk.accounts.dev; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://img.clerk.com; font-src 'self' data:; connect-src 'self' https://clerk.com https://*.clerk.accounts.dev;"
+    "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://clerk.com https://*.clerk.accounts.dev https://well-collie-13.clerk.accounts.dev; style-src 'self' 'unsafe-inline' https://*.clerk.accounts.dev; img-src 'self' data: https: https://img.clerk.com https://*.clerk.accounts.dev; font-src 'self' data: https://*.clerk.accounts.dev; connect-src 'self' https://clerk.com https://*.clerk.accounts.dev https://well-collie-13.clerk.accounts.dev; frame-src https://*.clerk.accounts.dev;"
   )
 
   // Prevent access to sensitive files

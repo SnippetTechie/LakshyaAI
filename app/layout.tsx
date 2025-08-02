@@ -36,9 +36,6 @@ export default function RootLayout({
       <html lang="en">
         <head>
           <meta name="robots" content="noindex, nofollow" />
-          <meta httpEquiv="X-Frame-Options" content="DENY" />
-          <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-          <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
         </head>
         <body className={inter.className}>
           <SecurityProvider>

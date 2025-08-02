@@ -4,6 +4,11 @@ import { useEffect } from 'react'
 
 export default function SecurityProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
+    // Only apply security measures in production
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('🔧 SecurityProvider: Disabled in development mode')
+      return
+    }
     // Disable right-click context menu
     const disableRightClick = (e: MouseEvent) => {
       e.preventDefault()
