@@ -1,13 +1,26 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
-// Define protected routes that require authentication
+// Define route matchers
+const isPublicRoute = createRouteMatcher([
+  '/',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/api/webhooks(.*)',
+])
+
 const isProtectedRoute = createRouteMatcher([
   '/dashboard(.*)',
   '/profile(.*)',
   '/simulations(.*)',
+  '/mentor(.*)',
+  '/admin(.*)',
+  '/onboarding',
   '/api/user(.*)',
+  '/api/auth(.*)',
 ])
+
+
 
 export default clerkMiddleware(async (auth, request) => {
   // Create response
@@ -33,6 +46,11 @@ export default clerkMiddleware(async (auth, request) => {
       pathname.includes('.log') ||
       pathname.includes('node_modules')) {
     return new NextResponse('Access Denied', { status: 403 })
+  }
+
+  // Handle authentication and routing
+  if (isPublicRoute(request)) {
+    return response
   }
 
   // Protect routes that require authentication
