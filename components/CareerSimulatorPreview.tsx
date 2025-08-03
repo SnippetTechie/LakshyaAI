@@ -64,15 +64,19 @@ const CareerSimulatorPreview = () => {
   }
 
   return (
-    <section className="min-h-screen py-20 bg-gradient-to-br from-white via-purple-50 to-pink-50 flex items-center">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+    <section className="min-h-screen py-20 flex items-center relative overflow-hidden">
+      <div className="absolute inset-0 opacity-40">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary-100/20 to-accent-100/20"></div>
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-text-primary mb-6">
             Career Simulator
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Try real tasks from different careers to see what actually fits you. 
+          <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
+            Try real tasks from different careers to see what actually fits you.
             No textbook theory – just hands-on experience.
           </p>
         </div>
@@ -82,8 +86,8 @@ const CareerSimulatorPreview = () => {
           {simulatorCards.map((card, index) => (
             <div
               key={card.id}
-              className={`bg-white border-2 border-gray-200 rounded-2xl p-6 card-hover animate-fade-in-up ${
-                selectedCard === card.id ? 'border-blue-500 shadow-lg' : ''
+              className={`bg-background-secondary border-2 border-dark-400/30 rounded-2xl p-6 card-hover animate-fade-in-up ${
+                selectedCard === card.id ? 'border-primary-500 shadow-lg' : ''
               }`}
               style={{ animationDelay: `${index * 0.1}s` }}
               onMouseEnter={() => setSelectedCard(card.id)}
@@ -104,17 +108,17 @@ const CareerSimulatorPreview = () => {
               {/* Card Content */}
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">
+                  <h3 className="text-xl font-bold text-text-primary mb-1">
                     {card.title}
                   </h3>
-                  <p className="text-sm text-gray-500">{card.company}</p>
+                  <p className="text-sm text-text-tertiary">{card.company}</p>
                 </div>
 
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <p className="font-semibold text-gray-900 mb-2">
+                <div className="bg-background-tertiary p-4 rounded-lg">
+                  <p className="font-semibold text-text-primary mb-2">
                     Challenge: {card.challenge}
                   </p>
-                  <p className="text-sm text-gray-600 leading-relaxed">
+                  <p className="text-sm text-text-secondary leading-relaxed">
                     {card.description}
                   </p>
                 </div>
@@ -125,7 +129,7 @@ const CareerSimulatorPreview = () => {
                     {card.skills.map((skill) => (
                       <span
                         key={skill}
-                        className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full"
+                        className="px-3 py-1 bg-primary-500/20 text-primary-400 text-xs font-medium rounded-full"
                       >
                         {skill}
                       </span>
@@ -134,7 +138,7 @@ const CareerSimulatorPreview = () => {
                 </div>
 
                 {/* Stats */}
-                <div className="flex items-center justify-between text-sm text-gray-500">
+                <div className="flex items-center justify-between text-sm text-text-tertiary">
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center space-x-1">
                       <Clock size={14} />

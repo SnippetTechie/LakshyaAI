@@ -9,10 +9,10 @@ const tools = [
     description: 'Compare two careers side by side with salary, work-life balance, growth prospects, and day-to-day tasks.',
     icon: Target,
     color: 'orange',
-    bgColor: 'bg-orange-50',
-    borderColor: 'border-orange-200',
-    iconColor: 'text-orange-500',
-    buttonColor: 'bg-orange-500 hover:bg-orange-600'
+    bgColor: 'bg-slate-800/90 backdrop-blur-sm',
+    borderColor: 'border-slate-600/50',
+    iconColor: 'text-warning-400',
+    buttonColor: 'bg-gradient-to-r from-warning-400 to-warning-500 hover:from-warning-500 hover:to-warning-600'
   },
   {
     id: 'career-simulation',
@@ -20,10 +20,10 @@ const tools = [
     description: 'Try tasks from real careers through interactive challenges and mini-games to see what fits you.',
     icon: Zap,
     color: 'blue',
-    bgColor: 'bg-blue-50',
-    borderColor: 'border-blue-200',
-    iconColor: 'text-blue-500',
-    buttonColor: 'bg-blue-500 hover:bg-blue-600'
+    bgColor: 'bg-slate-800/90 backdrop-blur-sm',
+    borderColor: 'border-slate-600/50',
+    iconColor: 'text-primary-500',
+    buttonColor: 'bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700'
   },
   {
     id: 'visual-life-graph',
@@ -31,10 +31,10 @@ const tools = [
     description: 'View your 10-year career plan with milestones, salary progression, and key decision points.',
     icon: TrendingUp,
     color: 'green',
-    bgColor: 'bg-green-50',
-    borderColor: 'border-green-200',
-    iconColor: 'text-green-500',
-    buttonColor: 'bg-green-500 hover:bg-green-600'
+    bgColor: 'bg-slate-800/90 backdrop-blur-sm',
+    borderColor: 'border-slate-600/50',
+    iconColor: 'text-success-400',
+    buttonColor: 'bg-gradient-to-r from-success-400 to-success-500 hover:from-success-500 hover:to-success-600'
   },
   {
     id: 'self-discovery',
@@ -42,10 +42,10 @@ const tools = [
     description: 'Reflect on your interests, values, and goals through guided prompts before making career choices.',
     icon: BookOpen,
     color: 'purple',
-    bgColor: 'bg-purple-50',
-    borderColor: 'border-purple-200',
-    iconColor: 'text-purple-500',
-    buttonColor: 'bg-purple-500 hover:bg-purple-600'
+    bgColor: 'bg-slate-800/90 backdrop-blur-sm',
+    borderColor: 'border-slate-600/50',
+    iconColor: 'text-accent-500',
+    buttonColor: 'bg-gradient-to-r from-accent-500 to-accent-600 hover:from-accent-600 hover:to-accent-700'
   }
 ]
 
@@ -57,20 +57,24 @@ const CareerToolsSection = () => {
   }
 
   return (
-    <section id="features" className="min-h-screen py-12 sm:py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 flex items-center">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+    <section id="features" className="relative flex items-center min-h-screen py-12 overflow-hidden sm:py-20">
+      <div className="absolute inset-0 opacity-40">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary-100/20 to-accent-100/20"></div>
+      </div>
+
+      <div className="relative w-full px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
+        <div className="mb-12 text-center sm:mb-16">
+          <h2 className="mb-4 text-3xl font-bold sm:text-4xl md:text-5xl text-text-primary sm:mb-6">
             Discover Your Perfect Career Path
           </h2>
-          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="max-w-3xl mx-auto text-lg leading-relaxed sm:text-xl text-text-secondary">
             Use our powerful tools to explore, compare, and plan your future with confidence
           </p>
         </div>
 
         {/* Tools Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2 sm:gap-8">
           {tools.map((tool, index) => {
             const IconComponent = tool.icon
             return (
@@ -79,15 +83,15 @@ const CareerToolsSection = () => {
                 className={`${tool.bgColor} ${tool.borderColor} border-2 rounded-2xl p-6 sm:p-8 card-hover animate-fade-in-up`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4">
-                  <div className={`${tool.iconColor} p-3 bg-white rounded-xl shadow-sm flex-shrink-0`}>
+                <div className="flex flex-col items-start space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+                  <div className={`${tool.iconColor} p-3 bg-slate-700/80 rounded-xl shadow-sm flex-shrink-0`}>
                     <IconComponent size={28} className="sm:w-8 sm:h-8" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">
+                    <h3 className="mb-3 text-xl font-bold sm:text-2xl text-text-primary">
                       {tool.title}
                     </h3>
-                    <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed">
+                    <p className="mb-4 text-sm leading-relaxed sm:text-base text-text-secondary sm:mb-6">
                       {tool.description}
                     </p>
                     <button
@@ -107,21 +111,7 @@ const CareerToolsSection = () => {
           })}
         </div>
 
-        {/* Call to Action */}
-        <div className="text-center mt-12 sm:mt-16">
-          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg max-w-2xl mx-auto">
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
-              Ready to discover your ideal career?
-            </h3>
-            <p className="text-sm sm:text-base text-gray-600 mb-6">
-              Start with any tool above or take our comprehensive career assessment
-            </p>
-            <button className="btn-primary inline-flex items-center gap-2 text-sm sm:text-base">
-              Take Career Assessment
-              <ArrowRight size={18} />
-            </button>
-          </div>
-        </div>
+
       </div>
     </section>
   )

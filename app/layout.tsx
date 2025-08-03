@@ -4,7 +4,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import './globals.css'
 import SecurityProvider from '@/components/SecurityProvider'
 import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
+import ConditionalFooter from '@/components/ConditionalFooter'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -37,13 +37,13 @@ export default function RootLayout({
         <head>
           <meta name="robots" content="noindex, nofollow" />
         </head>
-        <body className={inter.className}>
+        <body className={`${inter.className} bg-gradient-to-br from-primary-50 via-accent-50 to-primary-100 text-text-primary min-h-screen`}>
           <SecurityProvider>
             <Navbar />
             <main className="min-h-screen">
               {children}
             </main>
-            <Footer />
+            <ConditionalFooter />
           </SecurityProvider>
         </body>
       </html>
