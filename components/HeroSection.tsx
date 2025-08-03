@@ -67,33 +67,33 @@ const HeroSection = () => {
   }
 
   return (
-    <section id="home" className="h-screen pt-16 relative overflow-hidden">
+    <section id="home" className="min-h-screen pt-16 pb-8 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
         <div className="absolute inset-0 opacity-40">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-100/20 to-purple-100/20"></div>
         </div>
 
-        <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full opacity-20 animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-16 h-16 bg-gradient-to-r from-pink-400 to-red-500 rounded-full opacity-20 animate-pulse"></div>
-        <div className="absolute bottom-40 left-20 w-12 h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute top-20 left-4 sm:left-10 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-r from-blue-400 to-purple-500 rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute top-40 right-4 sm:right-20 w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-pink-400 to-red-500 rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute bottom-40 left-4 sm:left-20 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-green-400 to-blue-500 rounded-full opacity-20 animate-pulse"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-8rem)]">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[calc(100vh-12rem)]">
           <div className="space-y-6 animate-fade-in-up">
             <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm px-4 py-2 rounded-full border border-blue-200">
               <Sparkles className="text-blue-500" size={16} />
               <span className="text-sm font-medium text-blue-700">India's #1 Career Guidance Platform</span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight font-space-grotesk">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight font-space-grotesk">
               <span className="block text-gray-900 mb-2 font-poppins">
                 India's youth deserve better{' '}
                 <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 bg-clip-text text-transparent font-bold">
                   career clarity
                 </span>
               </span>
-              <span className="block text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-800 mb-2 font-space-grotesk">
+              <span className="block text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-800 mb-2 font-space-grotesk">
                 <span className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-600 bg-clip-text text-transparent font-black tracking-tight">
                   LakshyaAI
                 </span>{' '}
@@ -101,7 +101,7 @@ const HeroSection = () => {
               </span>
             </h1>
 
-            <p className="text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl font-inter">
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed max-w-2xl font-inter">
               Experience real career tasks, compare opportunities, and plan your future with
               <span className="font-semibold text-blue-600 font-poppins"> AI-powered insights</span> – not random advice.
             </p>
@@ -109,63 +109,63 @@ const HeroSection = () => {
             <div className="flex flex-col sm:flex-row gap-4">
               <button
                 onClick={handleStartJourney}
-                className="group bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-2xl inline-flex items-center gap-2"
+                className="group bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-2xl inline-flex items-center gap-2 text-sm sm:text-base"
               >
-                <Target size={20} />
+                <Target size={18} />
                 Start My Journey
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
               </button>
 
-              <button className="group bg-white/80 backdrop-blur-sm border-2 border-blue-200 hover:border-blue-400 text-blue-700 px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:bg-white inline-flex items-center gap-2">
-                <Users size={20} />
+              <button className="group bg-white/80 backdrop-blur-sm border-2 border-blue-200 hover:border-blue-400 text-blue-700 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:bg-white inline-flex items-center gap-2 text-sm sm:text-base">
+                <Users size={18} />
                 Join 50K+ Students
               </button>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 pt-4">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 pt-4">
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">50K+</div>
-                <div className="text-xs text-gray-600">Students Guided</div>
+                <div className="text-xl sm:text-2xl font-bold text-blue-600">50K+</div>
+                <div className="text-xs sm:text-sm text-gray-600">Students Guided</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">100+</div>
-                <div className="text-xs text-gray-600">Career Paths</div>
+                <div className="text-xl sm:text-2xl font-bold text-purple-600">100+</div>
+                <div className="text-xs sm:text-sm text-gray-600">Career Paths</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">95%</div>
-                <div className="text-xs text-gray-600">Success Rate</div>
+                <div className="text-xl sm:text-2xl font-bold text-green-600">95%</div>
+                <div className="text-xs sm:text-sm text-gray-600">Success Rate</div>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-center lg:justify-end">
-            <div className="relative">
-              <div className="bg-white/90 backdrop-blur-lg rounded-3xl p-6 shadow-2xl border border-white/20 max-w-lg w-full">
-                <div className="text-center mb-6">
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">
+          <div className="flex justify-center lg:justify-end mt-8 lg:mt-0">
+            <div className="relative w-full max-w-lg">
+              <div className="bg-white/90 backdrop-blur-lg rounded-3xl p-4 sm:p-6 shadow-2xl border border-white/20 w-full">
+                <div className="text-center mb-4 sm:mb-6">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2">
                     Explore Career Paths
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-xs sm:text-sm text-gray-600">
                     Click on any career to discover opportunities
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4">
                   {careerPaths.map((career) => (
                     <button
                       key={career.id}
                       onClick={() => handleCareerSelect(career.id)}
-                      className={`group relative p-4 rounded-2xl transition-all duration-500 hover:scale-105 transform ${
+                      className={`group relative p-3 sm:p-4 rounded-2xl transition-all duration-500 hover:scale-105 transform ${
                         selectedCareer === career.id
                           ? 'bg-gradient-to-br ' + career.color + ' text-white shadow-2xl'
                           : 'bg-gray-50 hover:bg-white hover:shadow-lg'
                       }`}
                     >
                       <div className="text-center">
-                        <div className="text-3xl mb-2 group-hover:scale-110 transition-transform duration-300">
+                        <div className="text-2xl sm:text-3xl mb-1 sm:mb-2 group-hover:scale-110 transition-transform duration-300">
                           {career.emoji}
                         </div>
-                        <div className={`font-bold text-sm mb-1 ${
+                        <div className={`font-bold text-xs sm:text-sm mb-1 ${
                           selectedCareer === career.id ? 'text-white' : 'text-gray-800'
                         }`}>
                           {career.label}
@@ -175,7 +175,7 @@ const HeroSection = () => {
                         }`}>
                           {career.description}
                         </div>
-                        <div className={`text-xs font-semibold mt-2 ${
+                        <div className={`text-xs font-semibold mt-1 sm:mt-2 ${
                           selectedCareer === career.id ? 'text-white' : 'text-blue-600'
                         }`}>
                           {career.stats}
@@ -190,25 +190,25 @@ const HeroSection = () => {
                 </div>
 
                 {selectedCareer && (
-                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-2xl animate-fade-in-up border border-blue-200">
-                    <div className="flex items-center gap-3 mb-3">
-                      <TrendingUp className="text-blue-600" size={20} />
-                      <span className="font-semibold text-blue-800">Career Insights</span>
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-3 sm:p-4 rounded-2xl animate-fade-in-up border border-blue-200">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                      <TrendingUp className="text-blue-600" size={18} />
+                      <span className="font-semibold text-blue-800 text-sm sm:text-base">Career Insights</span>
                     </div>
-                    <p className="text-sm text-blue-700 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-blue-700 leading-relaxed">
                       Excellent choice! The {careerPaths.find(c => c.id === selectedCareer)?.label} path offers
                       great opportunities. Let's explore simulations, salary trends, and growth prospects together.
                     </p>
-                    <button className="mt-4 w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-xl font-semibold text-sm hover:from-blue-700 hover:to-purple-700 transition-all duration-300 flex items-center justify-center gap-2">
-                      <Target size={16} />
+                    <button className="mt-3 sm:mt-4 w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 sm:py-3 px-4 rounded-xl font-semibold text-xs sm:text-sm hover:from-blue-700 hover:to-purple-700 transition-all duration-300 flex items-center justify-center gap-2">
+                      <Target size={14} />
                       Explore This Path
                     </button>
                   </div>
                 )}
               </div>
 
-              <div className="absolute -top-4 -left-4 w-8 h-8 bg-gradient-to-r from-pink-400 to-red-500 rounded-full opacity-60 animate-pulse"></div>
-              <div className="absolute -bottom-4 -right-4 w-6 h-6 bg-gradient-to-r from-green-400 to-blue-500 rounded-full opacity-60 animate-pulse"></div>
+              <div className="absolute -top-2 sm:-top-4 -left-2 sm:-left-4 w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-pink-400 to-red-500 rounded-full opacity-60 animate-pulse"></div>
+              <div className="absolute -bottom-2 sm:-bottom-4 -right-2 sm:-right-4 w-4 h-4 sm:w-6 sm:h-6 bg-gradient-to-r from-green-400 to-blue-500 rounded-full opacity-60 animate-pulse"></div>
             </div>
           </div>
         </div>

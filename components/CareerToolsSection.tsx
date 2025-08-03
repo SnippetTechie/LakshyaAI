@@ -57,42 +57,42 @@ const CareerToolsSection = () => {
   }
 
   return (
-    <section id="features" className="min-h-screen py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 flex items-center">
+    <section id="features" className="min-h-screen py-12 sm:py-20 bg-gradient-to-br from-gray-50 via-blue-50 to-indigo-50 flex items-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
             Discover Your Perfect Career Path
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
             Use our powerful tools to explore, compare, and plan your future with confidence
           </p>
         </div>
 
         {/* Tools Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6 sm:gap-8">
           {tools.map((tool, index) => {
             const IconComponent = tool.icon
             return (
               <div
                 key={tool.id}
-                className={`${tool.bgColor} ${tool.borderColor} border-2 rounded-2xl p-8 card-hover animate-fade-in-up`}
+                className={`${tool.bgColor} ${tool.borderColor} border-2 rounded-2xl p-6 sm:p-8 card-hover animate-fade-in-up`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="flex items-start space-x-4">
-                  <div className={`${tool.iconColor} p-3 bg-white rounded-xl shadow-sm`}>
-                    <IconComponent size={32} />
+                <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-4">
+                  <div className={`${tool.iconColor} p-3 bg-white rounded-xl shadow-sm flex-shrink-0`}>
+                    <IconComponent size={28} className="sm:w-8 sm:h-8" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                    <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">
                       {tool.title}
                     </h3>
-                    <p className="text-gray-600 mb-6 leading-relaxed">
+                    <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed">
                       {tool.description}
                     </p>
                     <button
                       onClick={() => handleToolClick(tool.id)}
-                      className={`${tool.buttonColor} text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 inline-flex items-center gap-2 hover:scale-105 hover:shadow-lg`}
+                      className={`${tool.buttonColor} text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-all duration-300 inline-flex items-center gap-2 hover:scale-105 hover:shadow-lg text-sm sm:text-base`}
                     >
                       {tool.id === 'career-battle' && 'Start Comparing'}
                       {tool.id === 'career-simulation' && 'Try a Challenge'}
@@ -108,17 +108,17 @@ const CareerToolsSection = () => {
         </div>
 
         {/* Call to Action */}
-        <div className="text-center mt-16">
-          <div className="bg-white rounded-2xl p-8 shadow-lg max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+        <div className="text-center mt-12 sm:mt-16">
+          <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg max-w-2xl mx-auto">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
               Ready to discover your ideal career?
             </h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-sm sm:text-base text-gray-600 mb-6">
               Start with any tool above or take our comprehensive career assessment
             </p>
-            <button className="btn-primary inline-flex items-center gap-2">
+            <button className="btn-primary inline-flex items-center gap-2 text-sm sm:text-base">
               Take Career Assessment
-              <ArrowRight size={20} />
+              <ArrowRight size={18} />
             </button>
           </div>
         </div>

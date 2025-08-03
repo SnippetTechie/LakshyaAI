@@ -9,7 +9,7 @@ import AboutSection from '@/components/AboutSection'
 
 export default function Home() {
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-hidden w-full">
       <HeroSection />
       <CareerToolsSection />
       <CareerSimulatorPreview />
