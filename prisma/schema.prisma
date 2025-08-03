@@ -1,0 +1,355 @@
+// LakshyaAI Database Schema
+// Complete schema for career guidance platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum UserRole {
+  STUDENT
+  MENTOR_PENDING
+  MENTOR_VERIFIED
+  ADMIN
+}
+
+enum VerificationStatus {
+  PENDING
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum SimulationLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum TaskType {
+  MULTIPLE_CHOICE
+  DRAG_DROP
+  CODE
+  DESIGN
+  TEXT
+}
+
+enum JobMarketDemand {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum ExperienceLevel {
+  ENTRY
+  MID
+  SENIOR
+  LEAD
+  EXECUTIVE
+}
+
+enum MilestoneCategory {
+  EDUCATION
+  SKILL
+  JOB
+  CERTIFICATION
+  PERSONAL
+}
+
+// Core Models
+model User {
+  id                String             @id @default(cuid())
+  clerkId           String             @unique
+  email             String             @unique
+  name              String
+  avatarUrl         String?
+  role              UserRole?
+  verificationStatus VerificationStatus @default(PENDING)
+  location          String?
+  educationLevel    String?
+  experienceLevel   ExperienceLevel    @default(ENTRY)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  // Relations
+  mentorApplication     MentorApplication?
+  mentor                Mentor?
+  preferences           UserPreferences?
+  questions             Question[]
+  simulationResults     SimulationResult[]
+  careerComparisons     CareerComparison[]
+  lifeGraphs            LifeGraph[]
+  votes                 Vote[]
+  adminActions          AdminAction[]          @relation("AdminActions")
+  reviewedApplications  MentorApplication[]    @relation("ReviewedApplications")
+
+  @@map("users")
+}
+
+model Career {
+  id               String           @id @default(cuid())
+  title            String
+  description      String?
+  entrySalary      Int?
+  midSalary        Int?
+  seniorSalary     Int?
+  workLifeBalance  Int?             @default(5) // 1-10 scale
+  growthProspects  Int?             @default(5) // 1-10 scale
+  jobMarketDemand  JobMarketDemand? @default(MEDIUM)
+  requiredSkills   String[]
+  educationPath    String[]
+  industries       String[]
+  icon             String?
+  color            String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  // Relations
+  simulations       Simulation[]
+  careerComparisons1 CareerComparison[] @relation("Career1")
+  careerComparisons2 CareerComparison[] @relation("Career2")
+  lifeGraphs        LifeGraph[]
+  questions         Question[]
+
+  @@map("careers")
+}
+
+model MentorApplication {
+  id                        String             @id @default(cuid())
+  userId                    String             @unique
+  currentTitle              String
+  currentCompany            String
+  yearsOfExperience         Int
+  expertise                 String[]
+  linkedinProfile           String
+  resumeUrl                 String?
+  companyEmail              String?
+  companyEmailVerified      Boolean            @default(false)
+  professionalCertificates  String[]
+  bio                       String
+  whyMentor                 String
+  availableHours            Int                @default(5)
+  reviewedBy                String?
+  reviewNotes               String?
+  reviewedAt                DateTime?
+  status                    VerificationStatus @default(PENDING)
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+
+  // Relations
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mentor   Mentor?
+  reviewer User?    @relation("ReviewedApplications", fields: [reviewedBy], references: [id])
+
+  @@map("mentor_applications")
+}
+
+model Mentor {
+  id                    String    @id @default(cuid())
+  userId                String    @unique
+  applicationId         String    @unique
+  title                 String
+  company               String
+  expertise             String[]
+  bio                   String?
+  reputation            Int       @default(0)
+  answersCount          Int       @default(0)
+  helpfulAnswers        Int       @default(0)
+  isActive              Boolean   @default(true)
+  lastActivity          DateTime?
+  verificationExpiresAt DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  // Relations
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  application MentorApplication @relation(fields: [applicationId], references: [id])
+  answers     Answer[]
+
+  @@map("mentors")
+}
+
+model UserPreferences {
+  id                           String          @id @default(cuid())
+  userId                       String          @unique
+  selectedCareers              String[]
+  interests                    String[]
+  skills                       String[]
+  workLifeBalanceImportance    Int             @default(5) // 1-10 scale
+  salaryImportance             Int             @default(5) // 1-10 scale
+  growthImportance             Int             @default(5) // 1-10 scale
+  location                     String?
+  experienceLevel              ExperienceLevel @default(ENTRY)
+  educationLevel               String?
+  createdAt                    DateTime        @default(now())
+  updatedAt                    DateTime        @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_preferences")
+}
+
+model Question {
+  id          String    @id @default(cuid())
+  userId      String
+  title       String
+  description String
+  tags        String[]
+  careerId    String?
+  upvotes     Int       @default(0)
+  views       Int       @default(0)
+  isAnswered  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  career  Career?  @relation(fields: [careerId], references: [id])
+  answers Answer[]
+
+  @@map("questions")
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  questionId String
+  mentorId   String
+  content    String
+  upvotes    Int      @default(0)
+  isAccepted Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  mentor   Mentor   @relation(fields: [mentorId], references: [id], onDelete: Cascade)
+
+  @@map("answers")
+}
+
+model Vote {
+  id         String   @id @default(cuid())
+  userId     String
+  targetId   String   // question_id or answer_id
+  targetType String   // 'question' or 'answer'
+  voteType   String   // 'up' or 'down'
+  createdAt  DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetId, targetType])
+  @@map("votes")
+}
+
+model Simulation {
+  id           String          @id @default(cuid())
+  title        String
+  careerId     String
+  company      String?
+  level        SimulationLevel @default(BEGINNER)
+  challenge    String?
+  description  String?
+  skills       String[]
+  duration     String?
+  participants Int             @default(0)
+  rating       Float           @default(0)
+  icon         String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  // Relations
+  career  Career             @relation(fields: [careerId], references: [id], onDelete: Cascade)
+  tasks   SimulationTask[]
+  results SimulationResult[]
+
+  @@map("simulations")
+}
+
+model SimulationTask {
+  id           String   @id @default(cuid())
+  simulationId String
+  title        String
+  description  String?
+  type         TaskType
+  content      Json? // Flexible content storage
+  points       Int      @default(0)
+  timeLimit    Int? // in seconds
+  orderIndex   Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  // Relations
+  simulation Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+
+  @@map("simulation_tasks")
+}
+
+model SimulationResult {
+  id           String   @id @default(cuid())
+  userId       String
+  simulationId String
+  score        Int      @default(0)
+  totalPoints  Int      @default(0)
+  timeSpent    Int      @default(0) // in seconds
+  completedAt  DateTime @default(now())
+  answers      Json? // Store all task answers
+
+  // Relations
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  simulation Simulation @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+
+  @@map("simulation_results")
+}
+
+model CareerComparison {
+  id        String   @id @default(cuid())
+  userId    String
+  career1Id String
+  career2Id String
+  criteria  Json? // Store comparison weights
+  result    Json? // Store comparison results
+  createdAt DateTime @default(now())
+
+  // Relations
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  career1 Career @relation("Career1", fields: [career1Id], references: [id])
+  career2 Career @relation("Career2", fields: [career2Id], references: [id])
+
+  @@map("career_comparisons")
+}
+
+model LifeGraph {
+  id               String   @id @default(cuid())
+  userId           String
+  careerId         String
+  milestones       Json? // Store milestones array
+  projectedSalary  Json? // Store salary projections
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  career Career @relation(fields: [careerId], references: [id])
+
+  @@map("life_graphs")
+}
+
+model AdminAction {
+  id         String   @id @default(cuid())
+  adminId    String
+  actionType String // 'approve_mentor', 'reject_mentor', 'suspend_mentor'
+  targetId   String // mentor_application_id or mentor_id
+  reason     String?
+  createdAt  DateTime @default(now())
+
+  // Relations
+  admin User @relation("AdminActions", fields: [adminId], references: [id])
+
+  @@map("admin_actions")
+}
