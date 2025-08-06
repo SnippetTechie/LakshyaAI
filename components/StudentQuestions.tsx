@@ -49,26 +49,45 @@ export default function StudentQuestions({ userId }: StudentQuestionsProps) {
 
   // Real-time updates
   const handleNewAnswer = useCallback((data: any) => {
+    console.log('📨 StudentQuestions: Received new answer data:', data)
+
     // Update the specific question with the new answer
     setQuestions(prev => prev.map(q => {
-      if (q.id === data.question?.id) {
+      if (q.id === data.question?.id || q.id === data.questionId) {
+        const currentAnswerCount = q._count?.answers || 0
         return {
           ...q,
           isAnswered: true,
-          answers: [...(q.answers || []), data.answer],
-          _count: { answers: (q._count?.answers || 0) + 1 }
+          answers: [...(q.answers || []), data.answer || data],
+          _count: {
+            answers: currentAnswerCount + 1
+          }
         }
       }
       return q
     }))
 
-    console.log('✅ New answer received for your question!')
+    console.log('✅ StudentQuestions: New answer processed for your question!')
   }, [])
 
   const handleQuestionUpdated = useCallback((updatedQuestion: Question) => {
-    setQuestions(prev => prev.map(q =>
-      q.id === updatedQuestion.id ? updatedQuestion : q
-    ))
+    console.log('🔄 StudentQuestions: Question updated:', updatedQuestion.id, updatedQuestion._count)
+
+    setQuestions(prev => prev.map(q => {
+      if (q.id === updatedQuestion.id) {
+        // Ensure _count field is properly maintained
+        const safeUpdatedQuestion = {
+          ...updatedQuestion,
+          _count: {
+            answers: updatedQuestion._count?.answers ?? q._count?.answers ?? 0
+          },
+          answers: updatedQuestion.answers || q.answers || []
+        }
+        console.log('✅ StudentQuestions: Question updated with safe _count:', safeUpdatedQuestion._count)
+        return safeUpdatedQuestion
+      }
+      return q
+    }))
   }, [])
 
   const { isConnected, connectionError, activeUsers } = useRealtime({
@@ -253,7 +272,7 @@ export default function StudentQuestions({ userId }: StudentQuestionsProps) {
                     </span>
                     <span className="flex items-center gap-1">
                       <MessageSquare size={14} />
-                      {question._count.answers} answers
+                      {question._count?.answers ?? 0} answers
                     </span>
                   </div>
                   <span>{formatDate(question.createdAt)}</span>

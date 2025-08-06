@@ -131,6 +131,9 @@ export async function POST(request: NextRequest) {
       include: {
         user: {
           select: { name: true, avatarUrl: true }
+        },
+        _count: {
+          select: { answers: true }
         }
       }
     })

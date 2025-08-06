@@ -103,7 +103,7 @@ export default function AskQuestionForm({ onSubmit, isLoading = false }: AskQues
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="What would you like to know?"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-500"
             maxLength={200}
             required
           />
@@ -120,7 +120,7 @@ export default function AskQuestionForm({ onSubmit, isLoading = false }: AskQues
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Provide more details about your question..."
             rows={4}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
             maxLength={1000}
             required
           />
@@ -140,7 +140,7 @@ export default function AskQuestionForm({ onSubmit, isLoading = false }: AskQues
                 onChange={(e) => setCurrentTag(e.target.value)}
                 onKeyPress={handleTagKeyPress}
                 placeholder="Add a tag..."
-                className="flex-1 px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="flex-1 px-2 py-1 border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent text-sm text-gray-900 placeholder-gray-500"
                 maxLength={20}
               />
               <button
