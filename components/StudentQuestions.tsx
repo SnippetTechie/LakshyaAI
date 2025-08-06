@@ -102,7 +102,9 @@ export default function StudentQuestions({ userId }: StudentQuestionsProps) {
   }, [userId])
 
   const handleSubmitQuestion = async (questionData: { title: string; description: string; tags: string[] }) => {
+    console.log('🚀 StudentQuestions: Submitting question:', questionData.title)
     setIsSubmitting(true)
+
     try {
       const response = await fetch('/api/questions', {
         method: 'POST',
@@ -113,13 +115,16 @@ export default function StudentQuestions({ userId }: StudentQuestionsProps) {
       })
 
       if (response.ok) {
+        const newQuestion = await response.json()
+        console.log('✅ StudentQuestions: Question posted successfully!', newQuestion.id)
         await fetchQuestions() // Refresh questions
-        console.log('✅ Question posted successfully!')
       } else {
-        throw new Error('Failed to submit question')
+        const errorData = await response.json()
+        console.error('❌ StudentQuestions: Failed to submit question:', response.status, errorData)
+        throw new Error(errorData.error || 'Failed to submit question')
       }
     } catch (error) {
-      console.error('Error submitting question:', error)
+      console.error('❌ StudentQuestions: Error submitting question:', error)
       throw error
     } finally {
       setIsSubmitting(false)

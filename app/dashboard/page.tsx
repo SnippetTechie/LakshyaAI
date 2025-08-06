@@ -21,30 +21,40 @@ export default function Dashboard() {
 
   const checkUserRole = async () => {
     try {
+      console.log('🔍 Dashboard: Checking user role...')
       const response = await fetch('/api/auth/user')
+
       if (response.ok) {
         const userData = await response.json()
+        console.log('✅ Dashboard: User data received:', { id: userData.id, role: userData.role, name: userData.name })
 
         // Handle role-based routing - redirect non-students to their dashboards
         if (userData.role === 'MENTOR_VERIFIED') {
+          console.log('🔄 Dashboard: Redirecting verified mentor to mentor dashboard')
           router.push('/mentor/dashboard')
           return
         } else if (userData.role === 'ADMIN') {
+          console.log('🔄 Dashboard: Redirecting admin to admin dashboard')
           router.push('/admin')
           return
         } else if (userData.role === 'STUDENT') {
           // Student can access this dashboard
+          console.log('✅ Dashboard: Student role confirmed, setting up dashboard')
           setUserRole(userData.role)
           setDbUserId(userData.id)
         } else if (!userData.role) {
           // No role set, redirect to onboarding for first-time setup
+          console.log('🔄 Dashboard: No role set, redirecting to onboarding')
           router.push('/onboarding')
           return
         } else {
-          // Any other role, let them access dashboard
+          // Any other role (MENTOR_PENDING), let them access dashboard
+          console.log('✅ Dashboard: Other role detected:', userData.role)
           setUserRole(userData.role)
+          setDbUserId(userData.id)
         }
       } else {
+        console.error('❌ Dashboard: Error fetching user data:', response.status)
         // Error fetching user, redirect to onboarding
         router.push('/onboarding')
         return

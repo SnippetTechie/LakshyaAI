@@ -8,8 +8,11 @@ export async function GET() {
     const { userId } = await auth()
 
     if (!userId) {
+      console.log('❌ No userId in auth')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    console.log('✅ Auth successful, userId:', userId)
 
     // Get or create user in our database
     let user = await prisma.user.findUnique({
@@ -22,32 +25,49 @@ export async function GET() {
     })
 
     if (!user) {
+      console.log('🔄 User not found in database, creating new user...')
+
       // User doesn't exist in our database, get their info from Clerk and create them
       const clerkUser = await currentUser()
 
       if (!clerkUser) {
+        console.error('❌ User not found in Clerk')
         return NextResponse.json({ error: 'User not found in Clerk' }, { status: 404 })
       }
 
-      user = await prisma.user.create({
-        data: {
-          clerkId: userId,
-          email: clerkUser.emailAddresses[0]?.emailAddress || '',
-          name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'User',
-          avatarUrl: clerkUser.imageUrl,
-          // No default role - they'll select in onboarding
-        },
-        include: {
-          preferences: true,
-          mentor: true,
-          mentorApplication: true,
-        }
+      console.log('📝 Creating user with Clerk data:', {
+        clerkId: userId,
+        email: clerkUser.emailAddresses[0]?.emailAddress,
+        name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim()
       })
+
+      try {
+        user = await prisma.user.create({
+          data: {
+            clerkId: userId,
+            email: clerkUser.emailAddresses[0]?.emailAddress || '',
+            name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'User',
+            avatarUrl: clerkUser.imageUrl,
+            // No default role - they'll select in onboarding
+          },
+          include: {
+            preferences: true,
+            mentor: true,
+            mentorApplication: true,
+          }
+        })
+        console.log('✅ User created successfully:', user.id)
+      } catch (createError) {
+        console.error('❌ Error creating user:', createError)
+        return NextResponse.json({ error: 'Failed to create user' }, { status: 500 })
+      }
+    } else {
+      console.log('✅ User found in database:', user.id)
     }
 
     return NextResponse.json(user)
   } catch (error) {
-    console.error('Error fetching user:', error)
+    console.error('❌ Error in GET /api/auth/user:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

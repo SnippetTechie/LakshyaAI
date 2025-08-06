@@ -19,6 +19,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Question ID and content are required' }, { status: 400 })
     }
 
+    console.log('✅ Answers POST: Auth successful for userId:', userId)
+    console.log('📝 Answers POST: Request data:', { questionId, content: content?.substring(0, 50) })
+
     // Get user from database
     let user = await prisma.user.findUnique({
       where: { clerkId: userId },
@@ -26,9 +29,11 @@ export async function POST(request: NextRequest) {
     })
 
     if (!user) {
-      console.log('❌ User not found for clerkId:', userId)
+      console.log('❌ Answers POST: User not found for clerkId:', userId)
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
+
+    console.log('✅ Answers POST: User found:', user.id, 'Role:', user.role)
 
     console.log('👤 User found:', { id: user.id, role: user.role, hasMentor: !!user.mentor })
 

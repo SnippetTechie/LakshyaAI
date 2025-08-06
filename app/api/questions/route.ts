@@ -83,13 +83,19 @@ export async function POST(request: NextRequest) {
     const { userId } = await auth()
 
     if (!userId) {
+      console.log('❌ Questions POST: No userId in auth')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+
+    console.log('✅ Questions POST: Auth successful for userId:', userId)
 
     const body = await request.json()
     const { title, description, tags, careerId } = body
 
+    console.log('📝 Questions POST: Request data:', { title: title?.substring(0, 50), description: description?.substring(0, 50), tags, careerId })
+
     if (!title || !description) {
+      console.log('❌ Questions POST: Missing title or description')
       return NextResponse.json({ error: 'Title and description are required' }, { status: 400 })
     }
 
@@ -99,8 +105,11 @@ export async function POST(request: NextRequest) {
     })
 
     if (!user) {
+      console.log('❌ Questions POST: User not found in database for clerkId:', userId)
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
+
+    console.log('✅ Questions POST: User found:', user.id)
 
     // Create question
     const question = await prisma.question.create({
@@ -121,17 +130,20 @@ export async function POST(request: NextRequest) {
       }
     })
 
+    console.log('✅ Questions POST: Question created successfully:', question.id)
+
     // Broadcast new question to all mentors via Redis
     try {
       await RealtimeService.publishNewQuestion(question)
+      console.log('✅ Questions POST: Question broadcasted to mentors')
     } catch (broadcastError) {
-      console.error('Error broadcasting new question:', broadcastError)
+      console.error('❌ Questions POST: Error broadcasting new question:', broadcastError)
       // Don't fail the request if broadcast fails
     }
 
     return NextResponse.json(question, { status: 201 })
   } catch (error) {
-    console.error('Error creating question:', error)
+    console.error('❌ Questions POST: Error creating question:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

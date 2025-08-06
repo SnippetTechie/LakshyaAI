@@ -68,17 +68,29 @@ export function useRealtime(options: UseRealtimeOptions = {}) {
               
             case 'new_question':
               console.log('🆕 New question received:', data.data?.title)
-              onNewQuestion?.(data.data)
+              try {
+                onNewQuestion?.(data.data)
+              } catch (callbackError) {
+                console.error('❌ Error in onNewQuestion callback:', callbackError)
+              }
               break
-              
+
             case 'new_answer':
               console.log('💬 New answer received for your question')
-              onNewAnswer?.(data.data)
+              try {
+                onNewAnswer?.(data.data)
+              } catch (callbackError) {
+                console.error('❌ Error in onNewAnswer callback:', callbackError)
+              }
               break
-              
+
             case 'question_updated':
               console.log('🔄 Question updated:', data.data?.title)
-              onQuestionUpdated?.(data.data)
+              try {
+                onQuestionUpdated?.(data.data)
+              } catch (callbackError) {
+                console.error('❌ Error in onQuestionUpdated callback:', callbackError)
+              }
               break
               
             case 'heartbeat':

@@ -9,29 +9,41 @@ const connections = new Map<string, ReadableStreamDefaultController>()
 export async function GET(request: NextRequest) {
   try {
     const { userId } = await auth()
-    
+
     if (!userId) {
+      console.log('❌ Realtime: No userId in auth')
       return new Response('Unauthorized', { status: 401 })
     }
+
+    console.log('✅ Realtime: Auth successful for userId:', userId)
 
     // Create Server-Sent Events stream
     const stream = new ReadableStream({
       start(controller) {
         const connectionId = Math.random().toString(36).substr(2, 9)
-        
+
+        console.log('🔌 Realtime: Creating connection for user:', userId, 'connectionId:', connectionId)
+
         // Store connection
         connections.set(userId, controller)
-        
-        // Set user as online in Redis
-        RealtimeService.setUserOnline(userId, connectionId)
-        
+
+        // Set user as online in Redis (with error handling)
+        RealtimeService.setUserOnline(userId, connectionId).catch(error => {
+          console.error('❌ Realtime: Error setting user online:', error)
+        })
+
         // Send connection confirmation
-        controller.enqueue(`data: ${JSON.stringify({ 
-          type: 'connected', 
-          message: 'Real-time connection established',
-          connectionId,
-          timestamp: Date.now()
-        })}\n\n`)
+        try {
+          controller.enqueue(`data: ${JSON.stringify({
+            type: 'connected',
+            message: 'Real-time connection established',
+            connectionId,
+            timestamp: Date.now()
+          })}\n\n`)
+          console.log('✅ Realtime: Connection confirmation sent')
+        } catch (error) {
+          console.error('❌ Realtime: Error sending connection confirmation:', error)
+        }
         
         // Subscribe to relevant Redis channels
         const handleNewQuestion = (event: any) => {

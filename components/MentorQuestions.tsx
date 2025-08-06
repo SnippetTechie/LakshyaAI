@@ -114,13 +114,14 @@ export default function MentorQuestions({ mentorId }: MentorQuestionsProps) {
       })
 
       if (response.ok) {
+        const newAnswer = await response.json()
+        console.log('✅ MentorQuestions: Answer submitted successfully!', newAnswer.id)
         setAnswerContent('')
         setAnsweringQuestionId(null)
         await fetchQuestions() // Refresh questions
-        console.log('✅ Answer submitted successfully!')
       } else {
         const errorData = await response.json()
-        console.error('❌ Answer submission failed:', response.status, errorData)
+        console.error('❌ MentorQuestions: Answer submission failed:', response.status, errorData)
         throw new Error(errorData.error || 'Failed to submit answer')
       }
     } catch (error) {
