@@ -9,7 +9,7 @@ interface Question {
   id: string
   title: string
   description: string
-  tags: string[]
+  tags?: string[]
   upvotes: number
   views: number
   isAnswered: boolean
@@ -18,8 +18,8 @@ interface Question {
     name: string
     avatarUrl?: string
   }
-  answers: Answer[]
-  _count: {
+  answers?: Answer[]
+  _count?: {
     answers: number
   }
 }
@@ -27,12 +27,12 @@ interface Question {
 interface Answer {
   id: string
   content: string
-  upvotes: number
-  isAccepted: boolean
+  upvotes?: number
+  isAccepted?: boolean
   createdAt: string
-  mentor: {
-    user: {
-      name: string
+  mentor?: {
+    user?: {
+      name?: string
       avatarUrl?: string
     }
   }
@@ -55,10 +55,26 @@ export default function StudentQuestions({ userId }: StudentQuestionsProps) {
     setQuestions(prev => prev.map(q => {
       if (q.id === data.question?.id || q.id === data.questionId) {
         const currentAnswerCount = q._count?.answers || 0
+
+        // Ensure answer has safe structure
+        const safeAnswer = {
+          id: data.answer?.id || data.id || `temp-${Date.now()}`,
+          content: data.answer?.content || data.content || '',
+          upvotes: data.answer?.upvotes || data.upvotes || 0,
+          isAccepted: data.answer?.isAccepted || data.isAccepted || false,
+          createdAt: data.answer?.createdAt || data.createdAt || new Date().toISOString(),
+          mentor: {
+            user: {
+              name: data.answer?.mentor?.user?.name || data.mentor?.user?.name || 'Anonymous Mentor',
+              avatarUrl: data.answer?.mentor?.user?.avatarUrl || data.mentor?.user?.avatarUrl
+            }
+          }
+        }
+
         return {
           ...q,
           isAnswered: true,
-          answers: [...(q.answers || []), data.answer || data],
+          answers: [...(q.answers || []), safeAnswer],
           _count: {
             answers: currentAnswerCount + 1
           }
@@ -67,7 +83,7 @@ export default function StudentQuestions({ userId }: StudentQuestionsProps) {
       return q
     }))
 
-    console.log('✅ StudentQuestions: New answer processed for your question!')
+    console.log('✅ StudentQuestions: New answer processed with safe structure!')
   }, [])
 
   const handleQuestionUpdated = useCallback((updatedQuestion: Question) => {
@@ -101,11 +117,26 @@ export default function StudentQuestions({ userId }: StudentQuestionsProps) {
       const response = await fetch(`/api/questions?userId=${userId}`)
       if (response.ok) {
         const data = await response.json()
-        // Ensure each question has an answers array
+        // Ensure each question has safe data structure
         const questionsWithAnswers = data.map((question: any) => ({
           ...question,
-          answers: question.answers || [],
-          _count: question._count || { answers: 0 }
+          answers: Array.isArray(question.answers)
+            ? question.answers.map((answer: any) => ({
+                id: answer.id || `temp-${Math.random()}`,
+                content: answer.content || '',
+                upvotes: answer.upvotes || 0,
+                isAccepted: answer.isAccepted || false,
+                createdAt: answer.createdAt || new Date().toISOString(),
+                mentor: {
+                  user: {
+                    name: answer.mentor?.user?.name || 'Anonymous Mentor',
+                    avatarUrl: answer.mentor?.user?.avatarUrl
+                  }
+                }
+              }))
+            : [],
+          _count: question._count || { answers: 0 },
+          tags: question.tags || []
         }))
         setQuestions(questionsWithAnswers)
       }
@@ -282,14 +313,14 @@ export default function StudentQuestions({ userId }: StudentQuestionsProps) {
                   <div className="border-t pt-4">
                     <h5 className="font-medium text-gray-900 mb-3">Answers:</h5>
                     <div className="space-y-3">
-                      {question.answers.map((answer) => (
-                        <div key={answer.id} className="bg-gray-50 rounded-lg p-4">
+                      {(question.answers || []).map((answer) => (
+                        <div key={answer.id || `answer-${Math.random()}`} className="bg-gray-50 rounded-lg p-4">
                           <div className="flex items-start gap-3">
                             <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                              {answer.mentor.user.avatarUrl ? (
+                              {answer.mentor?.user?.avatarUrl ? (
                                 <img
                                   src={answer.mentor.user.avatarUrl}
-                                  alt={answer.mentor.user.name}
+                                  alt={answer.mentor.user.name || 'Mentor'}
                                   className="w-8 h-8 rounded-full"
                                 />
                               ) : (
@@ -298,15 +329,15 @@ export default function StudentQuestions({ userId }: StudentQuestionsProps) {
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <span className="font-medium text-gray-900">{answer.mentor.user.name}</span>
+                                <span className="font-medium text-gray-900">{answer.mentor?.user?.name || 'Anonymous Mentor'}</span>
                                 <span className="text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded">Mentor</span>
                                 <span className="text-xs text-gray-500">{formatDate(answer.createdAt)}</span>
                               </div>
-                              <p className="text-gray-700">{answer.content}</p>
+                              <p className="text-gray-700">{answer.content || 'No content available'}</p>
                               <div className="flex items-center gap-2 mt-2">
                                 <button className="flex items-center gap-1 text-xs text-gray-500 hover:text-blue-600">
                                   <ThumbsUp size={12} />
-                                  {answer.upvotes}
+                                  {answer.upvotes || 0}
                                 </button>
                                 {answer.isAccepted && (
                                   <span className="flex items-center gap-1 text-xs text-green-600">

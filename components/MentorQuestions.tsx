@@ -8,7 +8,7 @@ interface Question {
   id: string
   title: string
   description: string
-  tags: string[]
+  tags?: string[]
   upvotes: number
   views: number
   isAnswered: boolean
@@ -17,8 +17,8 @@ interface Question {
     name: string
     avatarUrl?: string
   }
-  answers: Answer[]
-  _count: {
+  answers?: Answer[]
+  _count?: {
     answers: number
   }
 }
@@ -26,12 +26,12 @@ interface Question {
 interface Answer {
   id: string
   content: string
-  upvotes: number
-  isAccepted: boolean
+  upvotes?: number
+  isAccepted?: boolean
   createdAt: string
-  mentor: {
-    user: {
-      name: string
+  mentor?: {
+    user?: {
+      name?: string
       avatarUrl?: string
     }
   }
@@ -51,14 +51,37 @@ export default function MentorQuestions({ mentorId }: MentorQuestionsProps) {
 
   // Real-time updates
   const handleNewQuestion = useCallback((newQuestion: Question) => {
-    setQuestions(prev => [newQuestion, ...prev])
-    console.log('🆕 New question received:', newQuestion.title)
+    console.log('🆕 MentorQuestions: New question received:', newQuestion.title)
+
+    // Ensure new question has proper data structure
+    const safeNewQuestion = {
+      ...newQuestion,
+      answers: newQuestion.answers || [],
+      _count: newQuestion._count || { answers: 0 },
+      tags: newQuestion.tags || []
+    }
+
+    setQuestions(prev => [safeNewQuestion, ...prev])
+    console.log('✅ MentorQuestions: New question added with safe structure')
   }, [])
 
   const handleQuestionUpdated = useCallback((updatedQuestion: Question) => {
-    setQuestions(prev => prev.map(q =>
-      q.id === updatedQuestion.id ? updatedQuestion : q
-    ))
+    console.log('🔄 MentorQuestions: Question updated:', updatedQuestion.id)
+
+    setQuestions(prev => prev.map(q => {
+      if (q.id === updatedQuestion.id) {
+        // Ensure updated question maintains proper data structure
+        const safeUpdatedQuestion = {
+          ...updatedQuestion,
+          answers: updatedQuestion.answers || q.answers || [],
+          _count: updatedQuestion._count || q._count || { answers: 0 },
+          tags: updatedQuestion.tags || q.tags || []
+        }
+        console.log('✅ MentorQuestions: Question updated with safe structure')
+        return safeUpdatedQuestion
+      }
+      return q
+    }))
   }, [])
 
   const { isConnected, connectionError, activeUsers } = useRealtime({
@@ -75,13 +98,37 @@ export default function MentorQuestions({ mentorId }: MentorQuestionsProps) {
       const response = await fetch(`/api/questions?limit=50&t=${timestamp}`)
       if (response.ok) {
         const data = await response.json()
-        console.log('✅ Fetched questions for mentor:', data.length, 'questions')
-        setQuestions(data)
+        console.log('✅ MentorQuestions: Fetched questions:', data.length, 'questions')
+
+        // Ensure each question has proper data structure
+        const safeQuestions = data.map((question: any) => ({
+          ...question,
+          answers: Array.isArray(question.answers)
+            ? question.answers.map((answer: any) => ({
+                id: answer.id || `temp-${Math.random()}`,
+                content: answer.content || '',
+                upvotes: answer.upvotes || 0,
+                isAccepted: answer.isAccepted || false,
+                createdAt: answer.createdAt || new Date().toISOString(),
+                mentor: {
+                  user: {
+                    name: answer.mentor?.user?.name || 'Anonymous Mentor',
+                    avatarUrl: answer.mentor?.user?.avatarUrl
+                  }
+                }
+              }))
+            : [],
+          _count: question._count || { answers: 0 },
+          tags: question.tags || []
+        }))
+
+        setQuestions(safeQuestions)
+        console.log('✅ MentorQuestions: Questions processed with safe structure')
       } else {
-        console.error('❌ Failed to fetch questions:', response.status)
+        console.error('❌ MentorQuestions: Failed to fetch questions:', response.status)
       }
     } catch (error) {
-      console.error('❌ Error fetching questions:', error)
+      console.error('❌ MentorQuestions: Error fetching questions:', error)
     } finally {
       setIsLoading(false)
     }
@@ -320,9 +367,9 @@ export default function MentorQuestions({ mentorId }: MentorQuestionsProps) {
                 <h3 className="text-xl font-bold text-gray-900 mb-3">{question.title}</h3>
                 <p className="text-gray-700 leading-relaxed mb-4">{question.description}</p>
 
-                {question.tags.length > 0 && (
+                {(question.tags?.length || 0) > 0 && (
                   <div className="flex flex-wrap gap-2">
-                    {question.tags.map((tag, index) => (
+                    {(question.tags || []).map((tag, index) => (
                       <span
                         key={index}
                         className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200"
@@ -343,7 +390,7 @@ export default function MentorQuestions({ mentorId }: MentorQuestionsProps) {
                   </div>
                   <div className="flex items-center gap-1">
                     <MessageSquare size={16} />
-                    <span>{question._count.answers} answers</span>
+                    <span>{question._count?.answers ?? 0} answers</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <ThumbsUp size={16} />
@@ -363,26 +410,26 @@ export default function MentorQuestions({ mentorId }: MentorQuestionsProps) {
               </div>
 
               {/* Existing Answers */}
-              {question.answers.length > 0 && (
+              {(question.answers?.length || 0) > 0 && (
                 <div className="px-6 py-4 border-t border-gray-100">
                   <h5 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <MessageSquare size={18} />
-                    Previous Answers ({question.answers.length})
+                    Previous Answers ({question.answers?.length || 0})
                   </h5>
                   <div className="space-y-4">
-                    {question.answers.map((answer) => (
+                    {(question.answers || []).map((answer) => (
                       <div key={answer.id} className="bg-blue-50 rounded-lg p-4 border border-blue-100">
                         <div className="flex items-start gap-3">
                           <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
-                            {answer.mentor.user.name.charAt(0).toUpperCase()}
+                            {(answer.mentor?.user?.name || 'M').charAt(0).toUpperCase()}
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                              <span className="font-semibold text-gray-900">{answer.mentor.user.name}</span>
+                              <span className="font-semibold text-gray-900">{answer.mentor?.user?.name || 'Anonymous Mentor'}</span>
                               <span className="text-xs text-green-700 bg-green-100 px-2 py-1 rounded-full font-medium border border-green-200">✓ Mentor</span>
                               <span className="text-sm text-gray-500">{formatDate(answer.createdAt)}</span>
                             </div>
-                            <p className="text-gray-800 leading-relaxed">{answer.content}</p>
+                            <p className="text-gray-800 leading-relaxed">{answer.content || 'No content available'}</p>
                           </div>
                         </div>
                       </div>
