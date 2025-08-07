@@ -3,8 +3,11 @@
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { BookOpen, Target, TrendingUp, Users, MessageSquare } from 'lucide-react'
+import { BookOpen, Target, TrendingUp, Users, MessageSquare, Bot, Play, BarChart3, Sparkles, Zap, Trophy, Brain } from 'lucide-react'
 import StudentQuestions from '@/components/StudentQuestions'
+import CareerChatBot from '@/components/CareerChatBot'
+import CareerSimulation from '@/components/CareerSimulation'
+import VisualLifeGraph from '@/components/VisualLifeGraph'
 
 export default function Dashboard() {
   const { user, isLoaded } = useUser()
@@ -12,6 +15,7 @@ export default function Dashboard() {
   const [isCheckingRole, setIsCheckingRole] = useState(true)
   const [userRole, setUserRole] = useState<string | null>(null)
   const [dbUserId, setDbUserId] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<'overview' | 'career-guide' | 'simulation' | 'life-graph' | 'mentor-connect'>('overview')
 
   useEffect(() => {
     if (isLoaded && user) {
@@ -83,129 +87,180 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background-primary pt-20">
+    <div className="min-h-screen bg-gray-50 pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-primary-50 to-accent-50 rounded-2xl shadow-xl p-8 mb-8 border border-dark-400/20">
-          <h1 className="text-3xl font-bold text-text-primary mb-2">
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-xl p-8 mb-8 text-white">
+          <h1 className="text-3xl font-bold mb-2">
             Welcome back, {user?.firstName || 'Student'}! 👋
           </h1>
-          <p className="text-text-secondary text-lg">
+          <p className="text-blue-100 text-lg">
             Ready to continue your career journey? Let's explore new opportunities and insights.
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-neutral-200 hover:shadow-xl hover:border-primary-300 transition-all duration-300">
-            <div className="flex items-center">
-              <div className="p-3 bg-primary-100 rounded-xl">
-                <Target className="h-6 w-6 text-primary-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Simulations Completed</p>
-                <p className="text-2xl font-bold text-gray-900">12</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-neutral-200 hover:shadow-xl hover:border-success-300 transition-all duration-300">
-            <div className="flex items-center">
-              <div className="p-3 bg-success-100 rounded-xl">
-                <TrendingUp className="h-6 w-6 text-success-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Career Score</p>
-                <p className="text-2xl font-bold text-gray-900">85%</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-neutral-200 hover:shadow-xl hover:border-accent-300 transition-all duration-300">
-            <div className="flex items-center">
-              <div className="p-3 bg-accent-100 rounded-xl">
-                <BookOpen className="h-6 w-6 text-accent-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Courses Enrolled</p>
-                <p className="text-2xl font-bold text-gray-900">5</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-neutral-200 hover:shadow-xl hover:border-warning-300 transition-all duration-300">
-            <div className="flex items-center">
-              <div className="p-3 bg-warning-100 rounded-xl">
-                <Users className="h-6 w-6 text-warning-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Mentor Sessions</p>
-                <p className="text-2xl font-bold text-gray-900">3</p>
-              </div>
-            </div>
+        {/* Navigation Tabs */}
+        <div className="bg-white rounded-xl shadow-lg mb-8 border border-gray-200">
+          <div className="flex overflow-x-auto">
+            {[
+              { id: 'overview', label: 'Overview', icon: BarChart3 },
+              { id: 'career-guide', label: 'Career Guide', icon: Bot },
+              { id: 'simulation', label: 'Career Simulation', icon: Play },
+              { id: 'life-graph', label: 'Visual Life Graph', icon: TrendingUp },
+              { id: 'mentor-connect', label: 'Mentor Connect', icon: MessageSquare }
+            ].map((tab) => {
+              const IconComponent = tab.icon
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors whitespace-nowrap ${
+                    activeTab === tab.id
+                      ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                      : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                  }`}
+                >
+                  <IconComponent size={18} />
+                  {tab.label}
+                </button>
+              )
+            })}
           </div>
         </div>
 
-        {/* Q&A Section */}
+        {/* Stats Cards - Only show on overview */}
+        {activeTab === 'overview' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center">
+                <div className="p-3 bg-blue-100 rounded-xl">
+                  <Target className="h-6 w-6 text-blue-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Simulations Completed</p>
+                  <p className="text-2xl font-bold text-gray-900">12</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center">
+                <div className="p-3 bg-green-100 rounded-xl">
+                  <TrendingUp className="h-6 w-6 text-green-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Career Score</p>
+                  <p className="text-2xl font-bold text-gray-900">85%</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center">
+                <div className="p-3 bg-purple-100 rounded-xl">
+                  <BookOpen className="h-6 w-6 text-purple-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Courses Enrolled</p>
+                  <p className="text-2xl font-bold text-gray-900">5</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
+              <div className="flex items-center">
+                <div className="p-3 bg-orange-100 rounded-xl">
+                  <Users className="h-6 w-6 text-orange-600" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">Mentor Sessions</p>
+                  <p className="text-2xl font-bold text-gray-900">3</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab Content */}
         <div className="mb-8">
-          {dbUserId ? (
-            <StudentQuestions userId={dbUserId} />
-          ) : (
-            <div className="bg-white rounded-xl p-6 shadow-sm border">
-              <div className="text-center">
-                <MessageSquare className="mx-auto text-gray-400 mb-4" size={48} />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Loading Questions...</h3>
-                <p className="text-gray-600">Setting up your Q&A section...</p>
+          {activeTab === 'overview' && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Quick Actions */}
+              <div className="space-y-6">
+                <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Sparkles className="text-blue-600" size={20} />
+                    Quick Actions
+                  </h3>
+                  <div className="space-y-3">
+                    <button
+                      onClick={() => setActiveTab('career-guide')}
+                      className="w-full flex items-center gap-3 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-left"
+                    >
+                      <Bot className="text-blue-600" size={20} />
+                      <div>
+                        <p className="font-medium text-gray-900">Ask Career Guide</p>
+                        <p className="text-sm text-gray-600">Get instant AI-powered career advice</p>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('simulation')}
+                      className="w-full flex items-center gap-3 p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors text-left"
+                    >
+                      <Play className="text-green-600" size={20} />
+                      <div>
+                        <p className="font-medium text-gray-900">Try Career Simulation</p>
+                        <p className="text-sm text-gray-600">Experience real career tasks</p>
+                      </div>
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('life-graph')}
+                      className="w-full flex items-center gap-3 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors text-left"
+                    >
+                      <TrendingUp className="text-purple-600" size={20} />
+                      <div>
+                        <p className="font-medium text-gray-900">Build Life Graph</p>
+                        <p className="text-sm text-gray-600">Visualize your 10-year career plan</p>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Recent Activity */}
+              <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <Trophy className="text-yellow-600" size={20} />
+                  Recent Achievements
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
+                    <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                      <Trophy size={16} className="text-yellow-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Completed Software Dev Challenge</p>
+                      <p className="text-sm text-gray-600">Earned 100 points • 2 hours ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                      <Brain size={16} className="text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">Career Assessment Completed</p>
+                      <p className="text-sm text-gray-600">Discovered 3 new career matches • 1 day ago</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
-        </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Continue Learning</h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div>
-                  <h3 className="font-medium text-gray-900">Software Developer Path</h3>
-                  <p className="text-sm text-gray-600">Progress: 65%</p>
-                </div>
-                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
-                  Continue
-                </button>
-              </div>
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div>
-                  <h3 className="font-medium text-gray-900">Data Science Simulation</h3>
-                  <p className="text-sm text-gray-600">New challenges available</p>
-                </div>
-                <button className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
-                  Start
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Recommended for You</h2>
-            <div className="space-y-4">
-              <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
-                <h3 className="font-medium text-gray-900">AI/ML Engineer Path</h3>
-                <p className="text-sm text-gray-600 mb-2">Based on your interests in technology</p>
-                <button className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors">
-                  Explore
-                </button>
-              </div>
-              <div className="p-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
-                <h3 className="font-medium text-gray-900">Product Manager Simulation</h3>
-                <p className="text-sm text-gray-600 mb-2">High demand career with great growth</p>
-                <button className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
-                  Try Now
-                </button>
-              </div>
-            </div>
-          </div>
+          {activeTab === 'career-guide' && <CareerChatBot />}
+          {activeTab === 'simulation' && <CareerSimulation />}
+          {activeTab === 'life-graph' && <VisualLifeGraph />}
+          {activeTab === 'mentor-connect' && dbUserId && <StudentQuestions userId={dbUserId} />}
         </div>
       </div>
     </div>

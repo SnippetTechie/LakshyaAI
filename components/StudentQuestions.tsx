@@ -212,7 +212,7 @@ export default function StudentQuestions({ userId }: StudentQuestionsProps) {
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
             <MessageSquare size={20} />
-            Your Questions ({questions.length})
+            Mentor Connect ({questions.length})
           </h3>
 
           {/* Real-time connection indicator */}
