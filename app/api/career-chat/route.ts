@@ -7,52 +7,292 @@ const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
 
 console.log('🚀 LakshyaAI Career Chat API loaded successfully!')
 
-// Advanced Intelligent Career Guidance System with Dynamic Responses
+// Smart Career Guidance System - Actually understands questions!
 function generateIntelligentResponse(message: string, chatHistory?: any[]): string {
   const questionLower = message.toLowerCase()
 
-  // Context awareness from chat history
+  // Advanced question analysis - understand what the user is actually asking
+  const questionAnalysis = {
+    isGreeting: /^(hi|hello|hey|good morning|good afternoon|good evening)/.test(questionLower),
+    isCareerChoice: /(want to become|interested in|thinking about|considering|career in|future in)/.test(questionLower),
+    isComparison: /(vs|versus|or|better|compare|difference between|which is better)/.test(questionLower),
+    isConfused: /(confused|don't know|not sure|help me choose|what should|which career)/.test(questionLower),
+    isSalaryQuestion: /(salary|pay|earn|money|income|package|lpa)/.test(questionLower),
+    isHowToQuestion: /(how to|how can|steps to|way to|process to|prepare for)/.test(questionLower),
+    isRequirementQuestion: /(requirements|qualifications|eligibility|need|skills required)/.test(questionLower),
+    isTimelineQuestion: /(how long|duration|time|years|months)/.test(questionLower),
+    isCollegeQuestion: /(college|university|institute|admission|entrance|exam)/.test(questionLower)
+  }
+
+  // Extract career/field mentions
+  const careerMentions = {
+    software: /(software|programming|coding|developer|computer science|it|tech)/.test(questionLower),
+    medicine: /(medicine|doctor|medical|mbbs|neet|healthcare)/.test(questionLower),
+    engineering: /(engineering|engineer|jee|mechanical|civil|electrical)/.test(questionLower),
+    business: /(business|mba|management|commerce|finance|ca|cs)/.test(questionLower),
+    dataScience: /(data science|artificial intelligence|machine learning|ai|ml|analytics)/.test(questionLower),
+    design: /(design|creative|art|graphic|ui|ux)/.test(questionLower),
+    government: /(government|civil service|ias|ips|upsc|ssc)/.test(questionLower),
+    teaching: /(teaching|teacher|education|professor)/.test(questionLower)
+  }
+
+  // Context from chat history
   const hasContext = chatHistory && chatHistory.length > 0
   const previousTopics = hasContext ? chatHistory.map(msg => msg.content.toLowerCase()).join(' ') : ''
 
-  // Dynamic response variations to avoid repetition
-  const responseVariations = {
-    greetings: [
-      "Hi there! I'm LakshyaAI, your personal career mentor! 🚀",
-      "Hello! Welcome to LakshyaAI - your trusted career guide! 👋",
-      "Hey! I'm LakshyaAI, here to help shape your future! ✨",
-      "Greetings! LakshyaAI at your service for all career guidance! 🎯"
-    ],
-    encouragement: [
-      "That's a fantastic choice!",
-      "Excellent decision!",
-      "Great thinking!",
-      "Smart choice!",
-      "You're on the right track!",
-      "Perfect career direction!"
-    ],
-    transitions: [
-      "Let me break this down for you:",
-      "Here's what you need to know:",
-      "Let me guide you through this:",
-      "Here's your complete roadmap:",
-      "Let me share the insider details:",
-      "Here's the real scoop:"
-    ]
-  }
-
-  // Get random variations to avoid repetition
+  // Helper functions and variations
   const getRandomItem = (array: string[]) => array[Math.floor(Math.random() * array.length)]
-
-  // Track conversation depth for progressive responses
-  const conversationDepth = hasContext ? chatHistory.length : 0
-  const isFollowUp = conversationDepth > 0
-
-  // Check for repeated topics to provide deeper insights
   const hasDiscussedBefore = (topic: string) => previousTopics.includes(topic)
 
-  // Specific question patterns
-  if (questionLower.includes('confused') || questionLower.includes('don\'t know') || questionLower.includes('help me choose')) {
+  const responseVariations = {
+    encouragement: ["That's a fantastic choice!", "Excellent decision!", "Great thinking!", "Smart choice!"],
+    transitions: ["Let me break this down for you:", "Here's what you need to know:", "Let me guide you through this:"],
+    greetings: ["Hi there! I'm LakshyaAI!", "Hello! Welcome to LakshyaAI!", "Hey! I'm LakshyaAI!"]
+  }
+
+  // SMART RESPONSE LOGIC - Actually understand what user is asking!
+
+  // 1. Handle greetings
+  if (questionAnalysis.isGreeting) {
+    return `Hello! I'm LakshyaAI, your personal career counselor! 👋
+
+I'm here to help you navigate your career journey in India. I can assist with:
+
+🎯 **What I can help you with:**
+• Career path selection and guidance
+• Course recommendations and entrance exams
+• Salary insights and job market trends
+• Skills development and learning roadmaps
+• College and university guidance
+
+**Popular questions I get:**
+• "What career is best for me?"
+• "How to become a software engineer?"
+• "Engineering vs Medicine - which is better?"
+• "What's the salary in data science?"
+
+What would you like to know about your career? Feel free to ask me anything! 😊`
+  }
+
+  // 2. Handle salary-specific questions
+  if (questionAnalysis.isSalaryQuestion) {
+    if (careerMentions.software) {
+      return `💰 **Software Engineer Salaries in India:**
+
+**Realistic Salary Expectations:**
+• **Freshers (0-2 years)**: ₹3-8 LPA
+• **Mid-level (2-5 years)**: ₹8-18 LPA
+• **Senior (5-8 years)**: ₹18-35 LPA
+• **Lead/Architect (8+ years)**: ₹35-80+ LPA
+
+**By Company Type:**
+• **Product Companies** (Google, Microsoft): ₹15-80+ LPA
+• **Startups** (Flipkart, Zomato): ₹8-40+ LPA
+• **Service Companies** (TCS, Infosys): ₹3-15 LPA
+
+**By Location:**
+• **Bangalore/Hyderabad**: 20-30% higher than average
+• **Mumbai/Pune**: 15-25% higher than average
+• **Delhi/NCR**: 10-20% higher than average
+• **Tier-2 cities**: 10-20% lower than average
+
+**Salary Growth Tips:**
+1. Learn in-demand skills (Cloud, AI/ML, DevOps)
+2. Switch companies every 2-3 years for 30-50% hikes
+3. Get certifications (AWS, Google Cloud)
+4. Build strong portfolio with real projects
+
+Want to know about specific technologies or career levels?`
+    }
+
+    if (careerMentions.medicine) {
+      return `💰 **Doctor Salaries in India:**
+
+**By Experience Level:**
+• **Junior Doctor (MBBS)**: ₹5-12 LPA
+• **Specialist (MD/MS)**: ₹15-40 LPA
+• **Senior Consultant**: ₹40-80+ LPA
+• **Private Practice**: ₹50-200+ LPA
+
+**By Specialization:**
+• **High-paying**: Cardiology, Neurology, Oncology (₹30-100+ LPA)
+• **Moderate**: General Medicine, Pediatrics (₹15-50 LPA)
+• **Government**: ₹7-25 LPA (with job security & benefits)
+
+**Career Timeline:**
+• MBBS (5.5 years) → ₹5-12 LPA
+• MD/MS (3 years) → ₹15-40 LPA
+• Fellowship (1-2 years) → ₹30-80+ LPA
+
+**Factors Affecting Salary:**
+1. Specialization choice
+2. Government vs Private sector
+3. Location (metros pay more)
+4. Hospital reputation
+5. Private practice setup
+
+The medical field offers excellent long-term earning potential and job security!`
+    }
+
+    return `💰 **Career Salaries in India - Quick Overview:**
+
+**High-Paying Careers:**
+• **Software Engineering**: ₹3-80+ LPA
+• **Data Science**: ₹6-60+ LPA
+• **Medicine (Specialist)**: ₹15-100+ LPA
+• **Investment Banking**: ₹8-50+ LPA
+• **Management Consulting**: ₹10-40+ LPA
+
+**Stable Careers:**
+• **Government Jobs**: ₹4-20 LPA + benefits
+• **Teaching**: ₹3-15 LPA
+• **Banking**: ₹4-25 LPA
+
+**Factors That Affect Salary:**
+1. Education level and college reputation
+2. Skills and certifications
+3. Location (metro vs tier-2 cities)
+4. Company size and type
+5. Years of experience
+
+Which specific career's salary would you like to know more about?`
+  }
+
+  // 3. Handle "how to" questions
+  if (questionAnalysis.isHowToQuestion) {
+    if (careerMentions.software) {
+      return `🚀 **How to Become a Software Engineer - Step by Step:**
+
+**Step 1: Choose Your Foundation (1-2 months)**
+• Pick one language: Python (easiest), Java (popular), or JavaScript (web-focused)
+• Use free resources: Codecademy, freeCodeCamp, YouTube
+
+**Step 2: Master the Basics (3-4 months)**
+• Learn programming fundamentals
+• Understand data structures and algorithms
+• Practice on HackerRank, LeetCode (start with easy problems)
+
+**Step 3: Build Projects (2-3 months)**
+• Create 3-5 projects to showcase skills
+• Examples: Personal website, Todo app, Weather app
+• Upload everything to GitHub
+
+**Step 4: Learn Frameworks (2-3 months)**
+• Web: React (frontend) + Node.js (backend)
+• Mobile: Flutter or React Native
+• Database: SQL basics
+
+**Step 5: Apply for Jobs/Internships**
+• Create strong resume highlighting projects
+• Apply to 50+ companies
+• Prepare for technical interviews
+
+**Education Options:**
+• **Traditional**: B.Tech CSE (4 years)
+• **Fast Track**: Coding bootcamp (6-12 months)
+• **Self-taught**: Online courses (6-18 months)
+
+**Timeline**: 6-18 months depending on your dedication and background.
+
+What specific aspect would you like me to elaborate on?`
+    }
+
+    if (careerMentions.medicine) {
+      return `🩺 **How to Become a Doctor in India - Complete Roadmap:**
+
+**Step 1: 12th Science (PCB) - 2 years**
+• Focus on Physics, Chemistry, Biology
+• Maintain 75%+ marks for NEET eligibility
+• Start NEET preparation in 11th itself
+
+**Step 2: NEET Preparation (1-2 years)**
+• **Study Material**: NCERT (most important) + reference books
+• **Coaching**: Allen, Aakash, Unacademy (optional but helpful)
+• **Practice**: Previous 10 years papers + mock tests
+• **Target Score**: 600+ for government colleges, 450+ for private
+
+**Step 3: MBBS (5.5 years)**
+• 4.5 years academic + 1 year internship
+• Cost: ₹50K-20L depending on college type
+• Focus on clinical skills and patient interaction
+
+**Step 4: Specialization - MD/MS (3 years)**
+• Clear NEET-PG for specialization
+• Choose based on interest and scope
+• High-demand: Radiology, Anesthesia, Dermatology
+
+**Step 5: Practice/Fellowship (Optional)**
+• Start practice or pursue super-specialization
+• Build patient base and reputation
+
+**Total Timeline**: 10-12 years from 12th to becoming a specialist
+
+**Investment**: ₹5-50 lakhs total (varies by college choice)
+
+Are you currently in which stage? I can give more specific guidance!`
+    }
+  }
+
+  // 4. Handle comparison questions
+  if (questionAnalysis.isComparison) {
+    if (careerMentions.software && careerMentions.medicine) {
+      return `⚖️ **Engineering vs Medicine - Detailed Comparison:**
+
+**🏥 MEDICINE**
+**Pros:**
+• High social respect and prestige
+• Stable income throughout career
+• Job security (always in demand)
+• Direct impact on people's lives
+• Recession-proof profession
+
+**Cons:**
+• Very long education period (10+ years)
+• Extremely competitive (NEET cutoffs)
+• High stress and responsibility
+• Limited work-life balance initially
+• High education costs
+
+**Timeline**: 2 years NEET prep + 5.5 years MBBS + 3 years specialization = 10+ years
+**Investment**: ₹5-50 lakhs
+**Salary**: ₹5-100+ LPA
+
+**💻 SOFTWARE ENGINEERING**
+**Pros:**
+• Faster entry into job market (1-4 years)
+• High earning potential early in career
+• Excellent work-life balance options
+• Remote work opportunities
+• Continuous learning and innovation
+
+**Cons:**
+• Requires constant skill updates
+• Can be mentally demanding
+• Job market can be competitive
+• Technology changes rapidly
+
+**Timeline**: 6 months - 4 years depending on path
+**Investment**: ₹50K - 15 lakhs
+**Salary**: ₹3-80+ LPA
+
+**🎯 Choose Medicine if:**
+• You're passionate about healthcare
+• You don't mind long study periods
+• You want guaranteed respect and job security
+• You can handle high-pressure situations
+
+**🎯 Choose Software Engineering if:**
+• You love technology and problem-solving
+• You want faster career growth
+• You prefer flexible work options
+• You're interested in innovation
+
+What matters most to you - job security, earning potential, or work-life balance?`
+    }
+  }
+
+  // 5. Handle confusion/career choice questions
+  if (questionAnalysis.isConfused || questionLower.includes('confused') || questionLower.includes('don\'t know') || questionLower.includes('help me choose')) {
     return `🤔 **I understand your confusion - it's completely normal!**
 
 Career confusion is something every student faces. Let me help you find clarity! Here's a simple approach:
