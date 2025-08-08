@@ -1,268 +1,253 @@
 'use client'
 
-import { useState } from 'react'
-import { TrendingUp, MapPin, DollarSign, GraduationCap, Briefcase, Star, ChevronRight } from 'lucide-react'
+import { useState, useRef, useCallback } from 'react'
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Briefcase, DollarSign, Target, Zap, ChevronDown, Download } from 'lucide-react'
 
-interface LifeMilestone {
+// Enhanced data structure for a career step
+interface CareerStep {
   year: number
-  age: number
-  title: string
+  role: string
+  salary: number // in Lakhs
   description: string
-  salary: string
-  type: 'education' | 'career' | 'achievement' | 'decision'
-  icon: any
+  skills: string[]
 }
 
-const sampleCareerPath: LifeMilestone[] = [
-  {
-    year: 2024,
-    age: 18,
-    title: 'Start Engineering Degree',
-    description: 'Begin Computer Science Engineering at top university',
-    salary: '₹0',
-    type: 'education',
-    icon: GraduationCap
-  },
-  {
-    year: 2026,
-    age: 20,
-    title: 'First Internship',
-    description: 'Summer internship at tech startup, learn real-world coding',
-    salary: '₹15,000/month',
-    type: 'career',
-    icon: Briefcase
-  },
-  {
-    year: 2028,
-    age: 22,
-    title: 'Graduate & First Job',
-    description: 'Join as Software Developer at MNC company',
-    salary: '₹8,00,000/year',
-    type: 'achievement',
-    icon: Star
-  },
-  {
-    year: 2030,
-    age: 24,
-    title: 'Senior Developer',
-    description: 'Promotion to Senior Software Developer, lead small team',
-    salary: '₹15,00,000/year',
-    type: 'career',
-    icon: TrendingUp
-  },
-  {
-    year: 2032,
-    age: 26,
-    title: 'Career Decision Point',
-    description: 'Choose: Stay technical or move to management?',
-    salary: '₹22,00,000/year',
-    type: 'decision',
-    icon: MapPin
-  },
-  {
-    year: 2034,
-    age: 28,
-    title: 'Tech Lead / Manager',
-    description: 'Lead engineering team of 8+ developers',
-    salary: '₹35,00,000/year',
-    type: 'career',
-    icon: Briefcase
+// Enhanced function to generate a more detailed career path
+const generateCareerPath = (field: string, targetSalary: string): CareerStep[] => {
+  const path: CareerStep[] = []
+  let currentSalary = 3 // Starting salary in Lakhs
+
+  const salaryRange = targetSalary.match(/\d+/g)?.map(Number) ?? [15]
+  const finalSalary = salaryRange[0]
+
+  const roles = {
+    'Software Development': ['Intern', 'Junior Dev', 'Software Dev', 'Senior Dev', 'Tech Lead'],
+    'Data Science & AI': ['Intern', 'Junior Analyst', 'Data Scientist', 'Senior Data Scientist', 'AI Specialist'],
+    'Product Management': ['Associate PM', 'Product Manager', 'Senior PM', 'Group PM', 'Director of Product'],
+    'Cybersecurity': ['Analyst', 'Security Engineer', 'Senior Engineer', 'Consultant', 'Architect'],
+    'UI/UX Design': ['Intern', 'Junior Designer', 'UI/UX Designer', 'Senior Designer', 'Design Lead'],
+    'Marketing': ['Coordinator', 'Specialist', 'Manager', 'Senior Manager', 'Director'],
+    'Finance & Banking': ['Analyst', 'Associate', 'Vice President', 'Director', 'Managing Director'],
+    'Healthcare': ['Medical Student', 'Resident', 'Attending Physician', 'Specialist', 'Consultant'],
+    'Civil Services': ['Aspirant', 'Probationer', 'SDM/ASP', 'District Magistrate/SP', 'Secretary'],
+    'Entrepreneurship': ['Founder (Idea)', 'Founder (Seed)', 'CEO (Growth)', 'CEO (Scale-up)', 'Visionary'],
   }
-]
+
+  const skillsDb = {
+    'Software Development': ['React, Node.js', 'System Design', 'Cloud (AWS/Azure)', 'DevOps (Docker, K8s)'],
+    'Data Science & AI': ['Python (Pandas, TF)', 'SQL', 'ML Models', 'Big Data (Spark)'],
+    'Product Management': ['User Research', 'Roadmapping', 'Agile/Scrum', 'Data Analysis'],
+    'Cybersecurity': ['Network Security', 'Penetration Testing', 'IAM', 'Threat Intelligence'],
+    'UI/UX Design': ['Figma/Sketch', 'User Research', 'Prototyping', 'Design Systems'],
+    'Marketing': ['SEO/SEM', 'Content Strategy', 'Analytics', 'CRM (Salesforce)'],
+    'Finance & Banking': ['Financial Modeling', 'Valuation', 'Excel', 'Capital Markets', 'M&A'],
+    'Healthcare': ['Diagnosis', 'Patient Care', 'Medical Research', 'Specialization', 'Ethics'],
+    'Civil Services': ['Public Policy', 'Administration', 'Law & Order', 'Governance', 'Economics'],
+    'Entrepreneurship': ['Product-Market Fit', 'Fundraising', 'Team Building', 'Scaling Ops', 'P&L Management'],
+  }
+
+  const fieldRoles = roles[field as keyof typeof roles] || roles['Software Development']
+  const fieldSkills = skillsDb[field as keyof typeof skillsDb] || skillsDb['Software Development']
+
+  for (let i = 0; i < 10; i++) {
+    const progress = i / 9
+    currentSalary = 3 + (finalSalary - 3) * progress * progress // Exponential growth
+
+    let roleIndex = Math.min(Math.floor(progress * fieldRoles.length), fieldRoles.length - 1)
+    
+    path.push({
+      year: new Date().getFullYear() + i,
+      role: fieldRoles[roleIndex],
+      salary: parseFloat(currentSalary.toFixed(1)),
+      description: `A key year for growth, focusing on core competencies and taking on more responsibility as a ${fieldRoles[roleIndex]}.`,
+      skills: [fieldSkills[roleIndex % fieldSkills.length], fieldSkills[(roleIndex + 1) % fieldSkills.length]].filter(Boolean),
+    })
+  }
+  return path
+}
 
 export default function VisualLifeGraph() {
-  const [selectedPath, setSelectedPath] = useState<'software' | 'data-science' | 'product' | 'custom'>('software')
-  const [showBuilder, setShowBuilder] = useState(false)
+  const [education, setEducation] = useState('1st Year College')
+  const [field, setField] = useState('')
+  const [targetSalary, setTargetSalary] = useState('₹15-25 Lakhs')
+  const [careerPath, setCareerPath] = useState<CareerStep[]>([])
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [activeIndex, setActiveIndex] = useState<number | null>(null)
+  const timelineRef = useRef<HTMLDivElement>(null)
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'education': return 'bg-blue-100 text-blue-700 border-blue-200'
-      case 'career': return 'bg-green-100 text-green-700 border-green-200'
-      case 'achievement': return 'bg-purple-100 text-purple-700 border-purple-200'
-      case 'decision': return 'bg-orange-100 text-orange-700 border-orange-200'
-      default: return 'bg-gray-100 text-gray-700 border-gray-200'
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const path = generateCareerPath(field, targetSalary)
+    setCareerPath(path)
+    setIsSubmitted(true)
+    setActiveIndex(0) // Open the first milestone by default
+  }
+
+  const handleDownloadPdf = useCallback(() => {
+    if (timelineRef.current) {
+      html2canvas(timelineRef.current, { scale: 2, backgroundColor: null }).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png')
+        const pdf = new jsPDF('p', 'px', 'a4')
+        const pdfWidth = pdf.internal.pageSize.getWidth()
+        const pdfHeight = pdf.internal.pageSize.getHeight()
+        const imgWidth = canvas.width
+        const imgHeight = canvas.height
+        const ratio = imgWidth / imgHeight
+        let newWidth = pdfWidth
+        let newHeight = newWidth / ratio
+        if (newHeight > pdfHeight) {
+            newHeight = pdfHeight
+            newWidth = newHeight * ratio
+        }
+        const x = (pdfWidth - newWidth) / 2
+        pdf.addImage(imgData, 'PNG', x, 0, newWidth, newHeight)
+        pdf.save(`My_Career_Timeline_${field.replace(/\s/g, '_')}.pdf`)
+      })
     }
-  }
+  }, [field])
 
-  const formatSalary = (salary: string) => {
-    if (salary === '₹0') return 'No Income'
-    return salary
-  }
-
-  if (showBuilder) {
-    return (
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Build Your Life Graph</h2>
-          <p className="text-gray-600">Answer a few questions to create your personalized 10-year career plan</p>
+  const formSection = (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="text-center">
+        <h2 className="text-3xl font-bold text-gray-900">{field ? `Chart Your Future in ${field}` : 'Chart Your Future'}</h2>
+        <p className="text-gray-600 mt-2">Get a personalized 10-year career timeline.</p>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Education Level</label>
+          <select 
+            value={education}
+            onChange={(e) => setEducation(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+          >
+            <option>12th Grade</option>
+            <option>1st Year College</option>
+            <option>2nd Year College</option>
+            <option>3rd Year College</option>
+            <option>4th Year College</option>
+            <option>Graduate</option>
+          </select>
         </div>
-
-        <div className="max-w-md mx-auto space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              What's your current education level?
-            </label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option>12th Grade</option>
-              <option>1st Year College</option>
-              <option>2nd Year College</option>
-              <option>3rd Year College</option>
-              <option>Final Year College</option>
-              <option>Graduate</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Which field interests you most?
-            </label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option>Software Development</option>
-              <option>Data Science & AI</option>
-              <option>Product Management</option>
-              <option>Digital Marketing</option>
-              <option>Finance & Banking</option>
-              <option>Healthcare</option>
-              <option>Design & Creative</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              What's your target salary in 5 years?
-            </label>
-            <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-              <option>₹10-15 Lakhs</option>
-              <option>₹15-25 Lakhs</option>
-              <option>₹25-40 Lakhs</option>
-              <option>₹40+ Lakhs</option>
-            </select>
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <button
-              onClick={() => setShowBuilder(false)}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-            >
-              Back
-            </button>
-            <button
-              onClick={() => {
-                setShowBuilder(false)
-                alert('🎉 Your personalized life graph has been created! This would show a customized career path based on your inputs.')
-              }}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Build My Graph
-            </button>
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Field of Interest</label>
+          <select 
+            value={field}
+            onChange={(e) => setField(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+          >
+            <option value="" disabled>Select a Field</option>
+            <option>Software Development</option>
+            <option>Data Science & AI</option>
+            <option>Product Management</option>
+            <option>Cybersecurity</option>
+            <option>UI/UX Design</option>
+            <option>Marketing</option>
+            <option>Finance & Banking</option>
+            <option>Healthcare</option>
+            <option>Civil Services</option>
+            <option>Entrepreneurship</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Target Salary (5 Yrs)</label>
+          <select 
+            value={targetSalary}
+            onChange={(e) => setTargetSalary(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black"
+          >
+            <option>₹10-15 Lakhs</option>
+            <option>₹15-25 Lakhs</option>
+            <option>₹25-40 Lakhs</option>
+            <option>₹40-60 Lakhs</option>
+            <option>₹60 Lakhs+</option>
+          </select>
         </div>
       </div>
-    )
-  }
+      <div className="text-center">
+        <button type="submit" disabled={!field} className="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 disabled:bg-gray-400 disabled:cursor-not-allowed">
+          {field ? `Generate My ${field.split(' ')[0]} Timeline` : 'Generate My Timeline'}
+        </button>
+      </div>
+    </form>
+  )
 
-  return (
-    <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Visual Life Graph</h2>
-        <p className="text-gray-600 mb-4">
-          View your 10-year career plan with milestones, salary progression, and key decision points.
-        </p>
-
-        <div className="flex gap-2 mb-4">
-          {[
-            { id: 'software', label: 'Software Dev' },
-            { id: 'data-science', label: 'Data Science' },
-            { id: 'product', label: 'Product Mgmt' }
-          ].map((path) => (
-            <button
-              key={path.id}
-              onClick={() => setSelectedPath(path.id as any)}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                selectedPath === path.id
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {path.label}
-            </button>
+  const timelineSection = (
+    <div ref={timelineRef} className="p-4 md:p-6 bg-gray-50 rounded-lg">
+      <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 text-center">Your 10-Year Journey in {field}</h2>
+      <p className="text-center text-gray-600 mb-8">Click on each milestone to see details.</p>
+      <div className="relative">
+        <div className="absolute left-4 md:left-1/2 -ml-px w-0.5 h-full bg-gradient-to-b from-blue-400 to-purple-500" aria-hidden="true"></div>
+        <div className="space-y-8">
+          {careerPath.map((step, index) => (
+            <div key={step.year} className="relative flex flex-col md:flex-row items-center md:justify-between">
+              <div className="md:w-5/12"></div>
+              <div className="absolute left-4 md:left-1/2 -translate-x-1/2 z-10">
+                <div className="w-8 h-8 bg-white border-4 border-blue-500 rounded-full flex items-center justify-center">
+                  <Briefcase className="w-4 h-4 text-blue-600" />
+                </div>
+              </div>
+              <motion.div 
+                className="w-full md:w-5/12 bg-white rounded-lg shadow-lg p-4 cursor-pointer border-l-4 border-blue-500" 
+                onClick={() => setActiveIndex(activeIndex === index ? null : index)}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <div className="flex justify-between items-center">
+                  <div>
+                    <p className="text-sm text-gray-500">{step.year}</p>
+                    <h3 className="text-lg font-bold text-gray-900">{step.role}</h3>
+                  </div>
+                  <ChevronDown className={`transition-transform ${activeIndex === index ? 'rotate-180' : ''}`} />
+                </div>
+                <AnimatePresence>
+                  {activeIndex === index && (
+                    <motion.div 
+                      className="mt-4 overflow-hidden"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <p className="text-sm text-gray-700 mb-3">{step.description}</p>
+                      <div className="flex items-center text-green-600 font-semibold mb-3">
+                        <DollarSign size={16} className="mr-2" /> Est. Salary: ₹{step.salary} Lakhs/year
+                      </div>
+                      <div className="space-y-2">
+                        <h4 className="font-semibold text-gray-800 flex items-center"><Target size={16} className="mr-2"/>Key Skills to Build:</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {step.skills.map(skill => <span key={skill} className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">{skill}</span>)}
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            </div>
           ))}
         </div>
       </div>
+    </div>
+  )
 
-      <div className="relative">
-        {/* Timeline line */}
-        <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-500 to-purple-500"></div>
-
-        <div className="space-y-6">
-          {sampleCareerPath.map((milestone, index) => {
-            const IconComponent = milestone.icon
-            
-            return (
-              <div key={index} className="relative flex items-start gap-4">
-                {/* Timeline dot */}
-                <div className="relative z-10 w-16 h-16 bg-white border-4 border-blue-500 rounded-full flex items-center justify-center shadow-lg">
-                  <IconComponent size={20} className="text-blue-600" />
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold text-gray-900">{milestone.title}</h3>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getTypeColor(milestone.type)}`}>
-                          {milestone.type}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-600">{milestone.description}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">{milestone.year}</p>
-                      <p className="text-xs text-gray-500">Age {milestone.age}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-green-600">
-                      <DollarSign size={14} />
-                      <span className="text-sm font-medium">{formatSalary(milestone.salary)}</span>
-                    </div>
-                    
-                    {milestone.type === 'decision' && (
-                      <button className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1">
-                        Explore options <ChevronRight size={12} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )
-          })}
+  return (
+    <div className="bg-white p-4 md:p-8 rounded-2xl shadow-xl w-full max-w-4xl mx-auto my-8">
+      {!isSubmitted ? formSection : 
+        <div>
+          {timelineSection}
+          <div className="text-center mt-8 space-x-4">
+            <button onClick={() => setIsSubmitted(false)} className="text-gray-700 font-medium py-2 px-6 rounded-lg border border-gray-300 hover:bg-gray-100 transition-colors">
+              Start Over
+            </button>
+            <button onClick={handleDownloadPdf} className="bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 inline-flex">
+              <Download size={18}/> Download as PDF
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div className="mt-6 flex gap-3">
-        <button
-          onClick={() => setShowBuilder(true)}
-          className="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-        >
-          Build My Custom Graph
-        </button>
-        <button className="px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-          Download PDF
-        </button>
-      </div>
-
-      <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-        <h3 className="font-semibold text-blue-900 mb-2">💡 Pro Tips:</h3>
-        <ul className="text-sm text-blue-800 space-y-1">
-          <li>• Career paths are flexible - you can pivot at decision points</li>
-          <li>• Salary ranges vary by company, location, and skills</li>
-          <li>• Consider both technical and leadership growth tracks</li>
-          <li>• Plan for continuous learning and skill upgrades</li>
-        </ul>
-      </div>
+      }
     </div>
   )
 }
