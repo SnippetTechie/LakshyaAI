@@ -2,8 +2,8 @@
 
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import { MessageCircle, Award, Users, TrendingUp, Star, Clock, CheckCircle, BookOpen, Target, Lightbulb, Calendar, ArrowRight, ThumbsUp, MessageSquare } from 'lucide-react'
+import { useEffect, useState, useCallback } from 'react'
+import { MessageCircle, Award, Users, Star, TrendingUp, Target, BookOpen, Zap } from 'lucide-react'
 import MentorQuestions from '@/components/MentorQuestions'
 
 interface MentorStats {
@@ -16,53 +16,29 @@ interface MentorStats {
 export default function MentorDashboard() {
   const { user, isLoaded } = useUser()
   const router = useRouter()
+  const [isLoading, setIsLoading] = useState(true)
+  const [mentorId, setMentorId] = useState<string | null>(null)
   const [stats, setStats] = useState<MentorStats>({
     totalAnswers: 0,
     helpfulVotes: 0,
-    rating: 5.0,
+    rating: 0,
     studentsHelped: 0
   })
-  const [isLoading, setIsLoading] = useState(true)
-  const [mentorId, setMentorId] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (isLoaded && user) {
-      fetchMentorData()
-    }
-  }, [isLoaded, user])
-
-  const fetchMentorData = async () => {
+  const fetchMentorData = useCallback(async () => {
     try {
-      // Check user role first
+      console.log('🔍 MentorDashboard: Fetching mentor data...')
       const response = await fetch('/api/auth/user')
+
       if (response.ok) {
         const userData = await response.json()
+        console.log('✅ MentorDashboard: User data received:', { id: userData.id, role: userData.role })
 
-        // Handle role-based routing - redirect non-mentors to their dashboards
-        if (userData.role === 'STUDENT') {
-          router.push('/dashboard')
-          return
-        } else if (userData.role === 'ADMIN') {
-          router.push('/admin')
-          return
-        } else if (!userData.role) {
-          // No role set, redirect to onboarding
-          router.push('/onboarding')
-          return
-        } else if (userData.role !== 'MENTOR_VERIFIED') {
-          // Not a verified mentor, redirect to onboarding
-          router.push('/onboarding')
-          return
-        }
+        if (userData.role === 'MENTOR_VERIFIED' || userData.role === 'MENTOR_PENDING') {
+          console.log('✅ MentorDashboard: Mentor role confirmed')
+          setMentorId(userData.id)
 
-        // Set mentor ID if available
-        console.log('👤 User data:', userData)
-        if (userData.mentor?.id) {
-          console.log('✅ Mentor ID found:', userData.mentor.id)
-          setMentorId(userData.mentor.id)
-        } else {
-          console.log('❌ No mentor ID found, creating mentor profile...')
-          // Auto-create mentor profile if missing
+          // Try to set up mentor profile if needed
           try {
             const setupResponse = await fetch('/api/mentors/quick-setup', {
               method: 'POST',
@@ -88,27 +64,35 @@ export default function MentorDashboard() {
           } catch (error) {
             console.error('❌ Error creating mentor profile:', error)
           }
+        } else {
+          // Error fetching user, redirect to onboarding
+          router.push('/onboarding')
+          return
         }
+
+        // For demo, use mock data
+        setStats({
+          totalAnswers: 12,
+          helpfulVotes: 28,
+          rating: 4.8,
+          studentsHelped: 15
+        })
       } else {
         // Error fetching user, redirect to onboarding
         router.push('/onboarding')
         return
       }
-
-      // For demo, use mock data
-      setStats({
-        totalAnswers: 12,
-        helpfulVotes: 28,
-        rating: 4.8,
-        studentsHelped: 15
-      })
     } catch (error) {
       console.error('Error fetching mentor data:', error)
       router.push('/onboarding')
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [router])
+
+  useEffect(() => {
+    fetchMentorData()
+  }, [fetchMentorData])
 
   if (!isLoaded || isLoading) {
     return (

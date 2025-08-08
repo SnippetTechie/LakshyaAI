@@ -55,7 +55,7 @@ const AboutSection = () => {
             About <span className="bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent">LakshyaAI</span>
           </h2>
           <p className="text-xl text-text-secondary max-w-3xl mx-auto leading-relaxed">
-            We're on a mission to democratize career guidance in India, helping every student
+            We&apos;re on a mission to democratize career guidance in India, helping every student
             make informed decisions about their future through technology and real insights.
           </p>
         </div>
@@ -81,7 +81,7 @@ const AboutSection = () => {
               </p>
 
               <p>
-                Our platform doesn't just tell you about careers – it lets you <span className="text-accent-500 font-semibold">experience them</span>.
+                Our platform doesn&apos;t just tell you about careers – it lets you <span className="text-accent-500 font-semibold">experience them</span>.
                 From coding challenges for aspiring developers to design tasks for future creatives,
                 we make career exploration engaging and insightful.
               </p>
@@ -90,7 +90,7 @@ const AboutSection = () => {
             <div className="bg-background-secondary/80 backdrop-blur-sm rounded-2xl p-6 border border-dark-400/20">
               <h4 className="text-xl font-semibold mb-3 text-primary-500">Our Vision</h4>
               <p className="text-text-secondary">
-                To become India's most trusted career guidance platform, where every student
+                To become India&apos;s most trusted career guidance platform, where every student
                 can discover their passion and build a fulfilling career with confidence.
               </p>
             </div>
@@ -149,7 +149,7 @@ const AboutSection = () => {
             </h3>
             <p className="text-text-secondary mb-6 leading-relaxed">
               Our team combines decades of experience in education, technology, and career counseling.
-              We're passionate about helping students make informed decisions about their future.
+              We&apos;re passionate about helping students make informed decisions about their future.
             </p>
             <div className="flex justify-center gap-4">
               <button className="bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-700 hover:to-accent-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105">

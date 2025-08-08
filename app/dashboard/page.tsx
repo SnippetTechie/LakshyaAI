@@ -2,7 +2,7 @@
 
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { BookOpen, Target, TrendingUp, Users, MessageSquare, Bot, Play, BarChart3, Sparkles, Zap, Trophy, Brain } from 'lucide-react'
 import StudentQuestions from '@/components/StudentQuestions'
 import CareerChatBot from '@/components/CareerChatBot'
@@ -17,13 +17,7 @@ export default function Dashboard() {
   const [dbUserId, setDbUserId] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'overview' | 'career-guide' | 'simulation' | 'life-graph' | 'mentor-connect'>('overview')
 
-  useEffect(() => {
-    if (isLoaded && user) {
-      checkUserRole()
-    }
-  }, [isLoaded, user])
-
-  const checkUserRole = async () => {
+  const checkUserRole = useCallback(async () => {
     try {
       console.log('🔍 Dashboard: Checking user role...')
       const response = await fetch('/api/auth/user')
@@ -71,7 +65,11 @@ export default function Dashboard() {
     } finally {
       setIsCheckingRole(false)
     }
-  }
+  }, [router])
+
+  useEffect(() => {
+    checkUserRole()
+  }, [checkUserRole])
 
   if (!isLoaded || isCheckingRole) {
     return (
@@ -95,7 +93,7 @@ export default function Dashboard() {
             Welcome back, {user?.firstName || 'Student'}! 👋
           </h1>
           <p className="text-blue-100 text-lg">
-            Ready to continue your career journey? Let's explore new opportunities and insights.
+            Ready to continue your career journey? Let&apos;s explore new opportunities and insights.
           </p>
         </div>
 

@@ -367,9 +367,9 @@ export default function MentorQuestions({ mentorId }: MentorQuestionsProps) {
                 <h3 className="text-xl font-bold text-gray-900 mb-3">{question.title}</h3>
                 <p className="text-gray-700 leading-relaxed mb-4">{question.description}</p>
 
-                {(question.tags?.length || 0) > 0 && (
+                {Array.isArray(question.tags) && question.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2">
-                    {(question.tags || []).map((tag, index) => (
+                    {question.tags.map((tag, index) => (
                       <span
                         key={index}
                         className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-200"

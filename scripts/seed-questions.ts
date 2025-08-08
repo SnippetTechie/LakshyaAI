@@ -53,7 +53,10 @@ async function seedQuestions() {
     // Create questions
     for (const questionData of questions) {
       await prisma.question.create({
-        data: questionData
+        data: {
+          ...questionData,
+          tags: JSON.stringify(questionData.tags)
+        }
       })
     }
 

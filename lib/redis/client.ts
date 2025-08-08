@@ -13,21 +13,25 @@ const redisConfig = process.env.REDIS_URL
 
 // Common Redis options with graceful fallback
 const redisOptions = {
-  retryDelayOnFailover: 100,
   enableReadyCheck: false,
   maxRetriesPerRequest: 1, // Reduced retries for faster fallback
   lazyConnect: true,
   connectTimeout: 2000, // 2 second timeout
-  // Handle both URL and object config
-  ...(typeof redisConfig === 'string' ? {} : redisConfig)
 }
 
 // Main Redis client for general operations
-export const redis = new Redis(typeof redisConfig === 'string' ? redisConfig : redisOptions)
+export const redis = typeof redisConfig === 'string' 
+  ? new Redis(redisConfig)
+  : new Redis({ ...redisOptions, ...redisConfig })
 
 // Separate Redis client for pub/sub (required by ioredis)
-export const redisPub = new Redis(typeof redisConfig === 'string' ? redisConfig : redisOptions)
-export const redisSub = new Redis(typeof redisConfig === 'string' ? redisConfig : redisOptions)
+export const redisPub = typeof redisConfig === 'string' 
+  ? new Redis(redisConfig)
+  : new Redis({ ...redisOptions, ...redisConfig })
+
+export const redisSub = typeof redisConfig === 'string' 
+  ? new Redis(redisConfig)
+  : new Redis({ ...redisOptions, ...redisConfig })
 
 // Connection event handlers with graceful fallback
 redis.on('connect', () => {
@@ -36,11 +40,8 @@ redis.on('connect', () => {
 
 redis.on('error', (error) => {
   // Only log once to avoid spam
-  if (!redis._hasLoggedError) {
-    console.log('⚠️  Redis not available - Running in fallback mode (manual refresh needed)')
-    console.log('💡 To enable real-time features, set up Redis: see RAILWAY_REDIS_SETUP.md')
-    redis._hasLoggedError = true
-  }
+  console.log('⚠️  Redis not available - Running in fallback mode (manual refresh needed)')
+  console.log('💡 To enable real-time features, set up Redis: see RAILWAY_REDIS_SETUP.md')
 })
 
 redis.on('ready', () => {

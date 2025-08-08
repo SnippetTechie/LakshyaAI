@@ -2,46 +2,45 @@
 
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
-import RoleSelector from '@/components/RoleSelector'
+import { useEffect, useState, useCallback } from 'react'
+import { User, GraduationCap, Briefcase, Target, ArrowRight } from 'lucide-react'
 
-export default function OnboardingPage() {
+export default function Onboarding() {
   const { user, isLoaded } = useUser()
   const router = useRouter()
-  const [isCheckingUser, setIsCheckingUser] = useState(true)
+  const [selectedRole, setSelectedRole] = useState<'STUDENT' | 'MENTOR_PENDING' | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  useEffect(() => {
-    if (isLoaded && user) {
-      // Check if user already has a role assigned
-      checkUserRole()
-    }
-  }, [isLoaded, user])
-
-  const checkUserRole = async () => {
+  const checkUserRole = useCallback(async () => {
     try {
+      console.log('🔍 Onboarding: Checking if user already has role...')
       const response = await fetch('/api/auth/user')
+
       if (response.ok) {
         const userData = await response.json()
+        console.log('✅ Onboarding: User data received:', { id: userData.id, role: userData.role })
 
-        // Only redirect if user has completed onboarding
-        if (userData.role === 'MENTOR_VERIFIED') {
-          router.push('/mentor/dashboard')
-          return
-        } else if (userData.role === 'STUDENT') {
-          router.push('/dashboard')
-          return
-        } else if (userData.role === 'ADMIN') {
-          router.push('/admin')
+        if (userData.role) {
+          // User already has a role, redirect to appropriate dashboard
+          console.log('🔄 Onboarding: User already has role, redirecting...')
+          if (userData.role === 'MENTOR_VERIFIED') {
+            router.push('/mentor/dashboard')
+          } else if (userData.role === 'STUDENT') {
+            router.push('/dashboard')
+          } else {
+            router.push('/dashboard')
+          }
           return
         }
-        // If user exists but hasn't completed onboarding, let them select role
       }
     } catch (error) {
       console.error('Error checking user role:', error)
-    } finally {
-      setIsCheckingUser(false)
     }
-  }
+  }, [router])
+
+  useEffect(() => {
+    checkUserRole()
+  }, [checkUserRole])
 
   const handleRoleSelect = async (role: 'STUDENT' | 'MENTOR_VERIFIED' | 'ADMIN') => {
     try {
@@ -65,7 +64,7 @@ export default function OnboardingPage() {
     }
   }
 
-  if (!isLoaded || isCheckingUser) {
+  if (!isLoaded || isSubmitting) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">

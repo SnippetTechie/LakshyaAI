@@ -74,7 +74,7 @@ export async function requireRole(requiredRole: UserRole) {
 export async function requireRoles(requiredRoles: UserRole[]) {
   const user = await requireAuth()
   
-  if (!requiredRoles.includes(user.role)) {
+  if (!user.role || !requiredRoles.includes(user.role)) {
     throw new Error('Insufficient permissions')
   }
 

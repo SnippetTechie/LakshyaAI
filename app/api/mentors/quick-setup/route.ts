@@ -6,111 +6,85 @@ import { UserRole, VerificationStatus } from '@prisma/client'
 export async function POST(request: NextRequest) {
   try {
     const { userId } = await auth()
-
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await request.json()
-    const {
-      currentTitle,
-      currentCompany,
-      yearsOfExperience,
-      expertise,
-      bio
-    } = body
-
-    // Get user from database
+    // Get or create user
     let user = await prisma.user.findUnique({
       where: { clerkId: userId },
-      include: { mentorApplication: true, mentor: true }
+      include: {
+        mentorApplication: true,
+        mentor: true
+      }
     })
 
     if (!user) {
-      // Create user if doesn't exist
-      const clerkUser = await currentUser()
-      
-      if (!clerkUser) {
-        return NextResponse.json({ error: 'User not found in Clerk' }, { status: 404 })
-      }
-      
-      user = await prisma.user.create({
-        data: {
-          clerkId: userId,
-          email: clerkUser.emailAddresses[0]?.emailAddress || '',
-          name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'User',
-          avatarUrl: clerkUser.imageUrl,
-          role: UserRole.MENTOR_VERIFIED,
-        }
-      })
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // Check if user already has mentor setup
+    // Check if user already has mentor application and mentor
     if (user.mentorApplication && user.mentor) {
       return NextResponse.json({
-        message: 'Mentor profile already exists',
+        message: 'User already has mentor profile',
         mentor: user.mentor
       })
     }
 
-    // Get or create mentor application
-    let application = user.mentorApplication
-    if (!application) {
-      // Create mentor application (auto-approved)
-      application = await prisma.mentorApplication.create({
+    // Create mentor application if doesn't exist
+    if (!user.mentorApplication) {
+      const application = await prisma.mentorApplication.create({
         data: {
           userId: user.id,
-          currentTitle,
-          currentCompany,
-          yearsOfExperience: parseInt(yearsOfExperience.split('-')[0]) || 3,
-          expertise,
-          linkedinProfile: '',
-          professionalCertificates: [],
-          bio,
-          whyMentor: 'Wants to help students with career guidance',
+          currentTitle: 'Professional Mentor',
+          currentCompany: 'Career Guidance Expert',
+          yearsOfExperience: 3,
+          expertise: JSON.stringify(['General Career Guidance']),
+          linkedinProfile: 'https://linkedin.com/in/mentor',
+          professionalCertificates: JSON.stringify([]),
+          bio: 'Experienced professional ready to help students with career guidance.',
+          whyMentor: 'Passionate about helping students find their career path',
           availableHours: 5,
           status: VerificationStatus.APPROVED
         }
       })
-    }
 
-    // Create mentor profile if it doesn't exist
-    let mentor = user.mentor
-    if (!mentor) {
-      mentor = await prisma.mentor.create({
+      // Create mentor profile
+      const mentor = await prisma.mentor.create({
         data: {
           userId: user.id,
           applicationId: application.id,
-          title: currentTitle,
-          company: currentCompany,
-          expertise: expertise,
-          bio: bio,
+          title: application.currentTitle,
+          company: application.currentCompany,
+          expertise: application.expertise,
+          bio: application.bio,
           reputation: 0,
           answersCount: 0,
           helpfulAnswers: 0,
           isActive: true
         }
       })
+
+      // Update user object to include the new mentor
+      user = await prisma.user.findUnique({
+        where: { id: user.id },
+        include: { mentor: true, mentorApplication: true }
+      })
+
+      console.log('✅ Created mentor record:', mentor.id)
     }
 
-    // Update user role to MENTOR_VERIFIED
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { role: UserRole.MENTOR_VERIFIED }
+    if (!user?.mentor) {
+      return NextResponse.json({ error: 'Failed to create mentor profile' }, { status: 500 })
+    }
+
+    return NextResponse.json({
+      message: 'Mentor profile created successfully',
+      mentor: user.mentor
     })
 
-    return NextResponse.json({ 
-      message: 'Mentor profile created successfully',
-      mentor: mentor,
-      application: application
-    }, { status: 201 })
-
   } catch (error) {
-    console.error('❌ Error creating mentor profile:', error)
-    console.error('❌ Error details:', JSON.stringify(error, null, 2))
-    return NextResponse.json({
-      error: 'Internal server error',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 })
+    console.error('Error in mentor quick setup:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

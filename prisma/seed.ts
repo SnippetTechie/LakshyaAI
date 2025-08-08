@@ -17,9 +17,9 @@ async function main() {
         workLifeBalance: 7,
         growthProspects: 9,
         jobMarketDemand: JobMarketDemand.HIGH,
-        requiredSkills: ['Programming', 'Problem Solving', 'Debugging', 'Version Control'],
-        educationPath: ['Computer Science Degree', 'Coding Bootcamp', 'Self-taught'],
-        industries: ['Technology', 'Finance', 'Healthcare', 'E-commerce'],
+        requiredSkills: JSON.stringify(['Programming', 'Problem Solving', 'Debugging', 'Version Control']),
+        educationPath: JSON.stringify(['Computer Science Degree', 'Coding Bootcamp', 'Self-taught']),
+        industries: JSON.stringify(['Technology', 'Finance', 'Healthcare', 'E-commerce']),
         icon: '💻',
         color: 'blue'
       }
@@ -34,9 +34,9 @@ async function main() {
         workLifeBalance: 6,
         growthProspects: 9,
         jobMarketDemand: JobMarketDemand.HIGH,
-        requiredSkills: ['Python', 'Statistics', 'Machine Learning', 'Data Visualization'],
-        educationPath: ['Statistics Degree', 'Computer Science', 'Data Science Bootcamp'],
-        industries: ['Technology', 'Finance', 'Healthcare', 'Retail'],
+        requiredSkills: JSON.stringify(['Python', 'Statistics', 'Machine Learning', 'Data Visualization']),
+        educationPath: JSON.stringify(['Statistics Degree', 'Computer Science', 'Data Science Bootcamp']),
+        industries: JSON.stringify(['Technology', 'Finance', 'Healthcare', 'Retail']),
         icon: '📊',
         color: 'green'
       }
@@ -51,9 +51,9 @@ async function main() {
         workLifeBalance: 8,
         growthProspects: 7,
         jobMarketDemand: JobMarketDemand.HIGH,
-        requiredSkills: ['Design Thinking', 'Prototyping', 'User Research', 'Visual Design'],
-        educationPath: ['Design Degree', 'HCI Degree', 'Design Bootcamp'],
-        industries: ['Technology', 'Media', 'E-commerce', 'Gaming'],
+        requiredSkills: JSON.stringify(['Design Thinking', 'Prototyping', 'User Research', 'Visual Design']),
+        educationPath: JSON.stringify(['Design Degree', 'HCI Degree', 'Design Bootcamp']),
+        industries: JSON.stringify(['Technology', 'Media', 'E-commerce', 'Gaming']),
         icon: '🎨',
         color: 'purple'
       }
@@ -68,9 +68,9 @@ async function main() {
         workLifeBalance: 6,
         growthProspects: 7,
         jobMarketDemand: JobMarketDemand.HIGH,
-        requiredSkills: ['Analytics', 'Content Creation', 'SEO/SEM', 'Social Media'],
-        educationPath: ['Marketing Degree', 'Digital Marketing Certification', 'MBA'],
-        industries: ['E-commerce', 'Media', 'Retail', 'Technology'],
+        requiredSkills: JSON.stringify(['Analytics', 'Content Creation', 'SEO/SEM', 'Social Media']),
+        educationPath: JSON.stringify(['Marketing Degree', 'Digital Marketing Certification', 'MBA']),
+        industries: JSON.stringify(['E-commerce', 'Media', 'Retail', 'Technology']),
         icon: '📱',
         color: 'orange'
       }

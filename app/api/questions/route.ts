@@ -3,6 +3,33 @@ import { auth } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import RealtimeService from '@/lib/redis/realtime'
 
+// Helper function to parse tags from JSON string
+function parseQuestionTags(questions: any[]) {
+  return questions.map(question => {
+    let parsedTags = []
+    
+    try {
+      if (question.tags) {
+        // If tags is already an array, use it as is
+        if (Array.isArray(question.tags)) {
+          parsedTags = question.tags
+        } else if (typeof question.tags === 'string') {
+          // If it's a string, try to parse it as JSON
+          parsedTags = JSON.parse(question.tags)
+        }
+      }
+    } catch (error) {
+      console.error('Error parsing tags for question:', question.id, error)
+      parsedTags = []
+    }
+    
+    return {
+      ...question,
+      tags: parsedTags
+    }
+  })
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -71,7 +98,13 @@ export async function GET(request: NextRequest) {
       })
     }
 
-    return NextResponse.json(questions)
+    // Parse tags from JSON strings back to arrays
+    const parsedQuestions = parseQuestionTags(questions)
+    
+    console.log('📊 Questions API: Parsed', parsedQuestions.length, 'questions')
+    console.log('🔍 Sample question tags:', parsedQuestions[0]?.tags)
+
+    return NextResponse.json(parsedQuestions)
   } catch (error) {
     console.error('Error fetching questions:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
@@ -117,7 +150,7 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         title,
         description,
-        tags: tags || [],
+        tags: JSON.stringify(tags || []),
         careerId: careerId || null
       },
       include: {
@@ -132,16 +165,22 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Questions POST: Question created successfully:', question.id)
 
+    // Parse tags for the response
+    const parsedQuestion = {
+      ...question,
+      tags: question.tags ? JSON.parse(question.tags) : []
+    }
+
     // Broadcast new question to all mentors via Redis
     try {
-      await RealtimeService.publishNewQuestion(question)
+      await RealtimeService.publishNewQuestion(parsedQuestion)
       console.log('✅ Questions POST: Question broadcasted to mentors')
     } catch (broadcastError) {
       console.error('❌ Questions POST: Error broadcasting new question:', broadcastError)
       // Don't fail the request if broadcast fails
     }
 
-    return NextResponse.json(question, { status: 201 })
+    return NextResponse.json(parsedQuestion, { status: 201 })
   } catch (error) {
     console.error('❌ Questions POST: Error creating question:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

@@ -112,44 +112,28 @@ export default function StudentQuestions({ userId }: StudentQuestionsProps) {
     enabled: true
   })
 
-  const fetchQuestions = async () => {
+  const fetchQuestions = useCallback(async () => {
     try {
+      console.log('🔍 StudentQuestions: Fetching questions for user:', userId)
       const response = await fetch(`/api/questions?userId=${userId}`)
+      
       if (response.ok) {
         const data = await response.json()
-        // Ensure each question has safe data structure
-        const questionsWithAnswers = data.map((question: any) => ({
-          ...question,
-          answers: Array.isArray(question.answers)
-            ? question.answers.map((answer: any) => ({
-                id: answer.id || `temp-${Math.random()}`,
-                content: answer.content || '',
-                upvotes: answer.upvotes || 0,
-                isAccepted: answer.isAccepted || false,
-                createdAt: answer.createdAt || new Date().toISOString(),
-                mentor: {
-                  user: {
-                    name: answer.mentor?.user?.name || 'Anonymous Mentor',
-                    avatarUrl: answer.mentor?.user?.avatarUrl
-                  }
-                }
-              }))
-            : [],
-          _count: question._count || { answers: 0 },
-          tags: question.tags || []
-        }))
-        setQuestions(questionsWithAnswers)
+        console.log('✅ StudentQuestions: Questions fetched successfully:', data.length)
+        setQuestions(data)
+      } else {
+        console.error('❌ StudentQuestions: Failed to fetch questions:', response.status)
       }
     } catch (error) {
-      console.error('Error fetching questions:', error)
+      console.error('❌ StudentQuestions: Error fetching questions:', error)
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [userId])
 
   useEffect(() => {
     fetchQuestions()
-  }, [userId])
+  }, [fetchQuestions])
 
   const handleSubmitQuestion = async (questionData: { title: string; description: string; tags: string[] }) => {
     console.log('🚀 StudentQuestions: Submitting question:', questionData.title)
@@ -258,7 +242,7 @@ export default function StudentQuestions({ userId }: StudentQuestionsProps) {
                     <h4 className="text-lg font-semibold text-gray-900 mb-2">{question.title}</h4>
                     <p className="text-gray-600 mb-3">{question.description}</p>
                     
-                    {question.tags.length > 0 && (
+                    {question.tags && Array.isArray(question.tags) && question.tags.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-3">
                         {question.tags.map((tag, index) => (
                           <span
