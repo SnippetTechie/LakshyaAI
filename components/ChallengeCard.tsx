@@ -12,19 +12,12 @@ const iconMap: { [key: string]: React.ElementType } = {
   'Data Scientist': BarChart2,
 };
 
-const difficultyColorMap: { [key: string]: 'default' | 'secondary' | 'destructive' | 'outline' } = {
-    Easy: 'default',
-    Medium: 'secondary',
-    Hard: 'destructive',
-};
-
 interface ChallengeCardProps {
   challenge: Challenge;
 }
 
 const ChallengeCard = ({ challenge }: ChallengeCardProps) => {
   const Icon = iconMap[challenge.career] || Code;
-  const badgeVariant = difficultyColorMap[challenge.difficulty] || 'outline';
 
   return (
     <Card className="flex flex-col h-full transition-transform transform hover:-translate-y-1 hover:shadow-xl">
@@ -33,11 +26,11 @@ const ChallengeCard = ({ challenge }: ChallengeCardProps) => {
             <Icon size={24} />
         </div>
         <div className="flex-grow">
-            <Badge variant={badgeVariant} className="float-right">{challenge.difficulty}</Badge>
+            <Badge variant={challenge.difficulty.toLowerCase() as 'easy' | 'medium' | 'hard'} className="float-right">{challenge.difficulty}</Badge>
         </div>
       </CardHeader>
       <CardContent className="flex-grow">
-        <h3 className="text-lg font-bold mb-1">{challenge.title}</h3>
+        <h3 className="text-lg font-bold mb-1 text-slate-900">{challenge.title}</h3>
         <p className="text-sm text-blue-500 font-semibold mb-3">{challenge.career}</p>
         <p className="text-sm text-gray-600 mb-4">{challenge.description}</p>
         <div className="flex items-center text-sm text-gray-500 space-x-4 mb-4">
@@ -48,10 +41,10 @@ const ChallengeCard = ({ challenge }: ChallengeCardProps) => {
             <p className="text-xs font-semibold text-gray-500 mb-2">Skills you'll practice:</p>
             <div className="flex flex-wrap gap-2">
                 {challenge.skills.map(skill => (
-                    <Badge key={skill} variant="outline">{skill}</Badge>
+                    <Badge key={skill} variant="default">{skill}</Badge>
                 ))}
                 {challenge.skills.length > 2 && (
-                    <Badge variant="outline">+{challenge.skills.length - 2} more</Badge>
+                    <Badge variant="default">+{challenge.skills.length - 2} more</Badge>
                 )}
             </div>
         </div>
