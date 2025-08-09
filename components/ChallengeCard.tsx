@@ -1,10 +1,12 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Clock, Star, Code, Stethoscope, BarChart2 } from 'lucide-react';
+import { Clock, Star, Code, Stethoscope, BarChart2, Trophy, CheckCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Challenge } from '@/lib/challenges';
+import { ChallengeProgressManager } from '@/lib/challengeProgress';
 
 const iconMap: { [key: string]: React.ElementType } = {
   'Software Developer': Code,
@@ -18,12 +20,44 @@ interface ChallengeCardProps {
 
 const ChallengeCard = ({ challenge }: ChallengeCardProps) => {
   const Icon = iconMap[challenge.career] || Code;
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [progress, setProgress] = useState<any>(null);
+
+  useEffect(() => {
+    const challengeProgress = ChallengeProgressManager.getProgress(challenge.id);
+    if (challengeProgress?.completed) {
+      setIsCompleted(true);
+      setProgress(challengeProgress);
+    }
+
+    // Listen for completion events
+    const handleCompletion = (event: CustomEvent) => {
+      if (event.detail.challengeId === challenge.id) {
+        setIsCompleted(true);
+        const updatedProgress = ChallengeProgressManager.getProgress(challenge.id);
+        setProgress(updatedProgress);
+      }
+    };
+
+    window.addEventListener('challengeCompleted', handleCompletion as EventListener);
+    return () => {
+      window.removeEventListener('challengeCompleted', handleCompletion as EventListener);
+    };
+  }, [challenge.id]);
 
   return (
-    <Card className="flex flex-col h-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl bg-gradient-to-br from-white to-blue-50/30 border-blue-100 min-h-[400px]">
+    <Card className={`flex flex-col h-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl min-h-[400px] ${
+      isCompleted 
+        ? 'bg-gradient-to-br from-green-50 to-emerald-50/30 border-green-200' 
+        : 'bg-gradient-to-br from-white to-blue-50/30 border-blue-100'
+    }`}>
       <CardHeader className="flex-row items-start gap-4 pb-4">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600 p-3 rounded-xl shadow-sm">
-            <Icon size={24} />
+        <div className={`p-3 rounded-xl shadow-sm ${
+          isCompleted 
+            ? 'bg-gradient-to-br from-green-50 to-green-100 text-green-600' 
+            : 'bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600'
+        }`}>
+          {isCompleted ? <Trophy size={24} /> : <Icon size={24} />}
         </div>
         <div className="flex-grow">
             <Badge 
@@ -79,17 +113,33 @@ const ChallengeCard = ({ challenge }: ChallengeCardProps) => {
       </CardContent>
       <CardFooter className="pt-4">
         <div className="w-full flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <div className="flex items-center gap-1">
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span>Available</span>
-            </div>
+          <div className="flex items-center gap-2 text-sm">
+            {isCompleted ? (
+              <div className="flex items-center gap-1 text-green-600">
+                <CheckCircle size={16} />
+                <span className="font-medium">Completed</span>
+                {progress?.score && (
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full ml-2">
+                    {progress.score}% score
+                  </span>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 text-gray-500">
+                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                <span>Available</span>
+              </div>
+            )}
           </div>
           <Link 
             href={`/student/challenges/${challenge.id}`} 
-            className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline transition-colors duration-200"
+            className={`font-medium text-sm hover:underline transition-colors duration-200 ${
+              isCompleted 
+                ? 'text-green-600 hover:text-green-700' 
+                : 'text-blue-600 hover:text-blue-700'
+            }`}
           >
-            View Details →
+            {isCompleted ? 'Review →' : 'Start Challenge →'}
           </Link>
         </div>
       </CardFooter>
