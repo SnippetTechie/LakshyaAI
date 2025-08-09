@@ -8,22 +8,10 @@ import StudentQuestions from '@/components/StudentQuestions'
 import CareerChatBot from '@/components/CareerChatBot'
 import CareerSimulation from '@/components/CareerSimulation'
 import VisualLifeGraph from '@/components/VisualLifeGraph'
+import ResourcesSection from '@/components/ResourcesSection';
 
-// Resources Section Component
-function ResourcesSection() {
-  const [selectedField, setSelectedField] = useState<string>('all')
-
-  const fields = [
-    { id: 'all', name: 'All Fields', icon: Globe },
-    { id: 'medical', name: 'Medical & Healthcare', icon: Target },
-    { id: 'engineering', name: 'Engineering & Technology', icon: Zap },
-    { id: 'business', name: 'Business & Management', icon: TrendingUp },
-    { id: 'arts', name: 'Arts & Design', icon: Sparkles },
-    { id: 'science', name: 'Science & Research', icon: Brain },
-    { id: 'government', name: 'Government & Civil Services', icon: Award }
-  ]
-
-  const resources = {
+// Old resources data - no longer used, keeping for reference only
+const oldResourcesData = {
     medical: [
       {
         title: 'Physics Wallah NEET 2025 Preparation',
@@ -421,99 +409,6 @@ function ResourcesSection() {
       }
     ]
   }
-
-  const getFilteredResources = () => {
-    if (selectedField === 'all') {
-      return Object.values(resources).flat()
-    }
-    return resources[selectedField as keyof typeof resources] || []
-  }
-
-  return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-          <Library className="text-blue-600" size={28} />
-          Career Resources
-        </h2>
-        <p className="text-gray-600">
-          Discover curated resources tailored to your career interests. Select a field to see relevant study materials, guides, and courses.
-        </p>
-      </div>
-
-      {/* Field Filter */}
-      <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Your Field of Interest</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {fields.map((field) => {
-            const IconComponent = field.icon
-            return (
-              <button
-                key={field.id}
-                onClick={() => setSelectedField(field.id)}
-                className={`flex items-center gap-2 p-3 rounded-lg border transition-all ${
-                  selectedField === field.id
-                    ? 'bg-blue-50 border-blue-200 text-blue-700'
-                    : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <IconComponent size={18} />
-                <span className="text-sm font-medium">{field.name}</span>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Resources Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {getFilteredResources().map((resource, index) => {
-          const IconComponent = resource.icon
-          return (
-            <div key={index} className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-blue-100 rounded-xl">
-                  <IconComponent className="h-6 w-6 text-blue-600" />
-                </div>
-                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                  {resource.type}
-                </span>
-              </div>
-              
-              <h4 className="text-lg font-semibold text-gray-900 mb-2">{resource.title}</h4>
-              <p className="text-gray-600 text-sm mb-4">{resource.description}</p>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1 text-gray-500">
-                  <Clock size={14} />
-                  <span className="text-xs">{resource.duration}</span>
-                </div>
-                <button 
-                  onClick={() => window.open(resource.url, '_blank')}
-                  className="flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
-                >
-                  Access Resource
-                  <ExternalLink size={14} />
-                </button>
-              </div>
-            </div>
-          )
-        })}
-      </div>
-
-      {getFilteredResources().length === 0 && (
-        <div className="bg-white rounded-xl shadow-lg p-12 border border-gray-200 text-center">
-          <Library className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Resources Found</h3>
-          <p className="text-gray-600">
-            Resources for this field are coming soon. Check back later or explore other fields.
-          </p>
-        </div>
-      )}
-    </div>
-  )
-}
 
 // Helper function to get active tab classes
 const getActiveTabClasses = (color: string) => {
