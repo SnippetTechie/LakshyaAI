@@ -20,7 +20,7 @@ const ChallengeCard = ({ challenge }: ChallengeCardProps) => {
   const Icon = iconMap[challenge.career] || Code;
 
   return (
-    <Card className="flex flex-col h-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl bg-gradient-to-br from-white to-blue-50/30 border-blue-100">
+    <Card className="flex flex-col h-full transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl bg-gradient-to-br from-white to-blue-50/30 border-blue-100 min-h-[400px]">
       <CardHeader className="flex-row items-start gap-4 pb-4">
         <div className="bg-gradient-to-br from-blue-50 to-blue-100 text-blue-600 p-3 rounded-xl shadow-sm">
             <Icon size={24} />
@@ -40,7 +40,7 @@ const ChallengeCard = ({ challenge }: ChallengeCardProps) => {
             </Badge>
         </div>
       </CardHeader>
-      <CardContent className="flex-grow">
+      <CardContent className="flex-grow flex flex-col justify-between">
         <h3 className="text-lg font-bold mb-1 text-gray-800">{challenge.title}</h3>
         <p className="text-sm text-blue-600 font-semibold mb-3">{challenge.career}</p>
         <p className="text-sm text-gray-600 mb-4 leading-relaxed">{challenge.description}</p>
@@ -77,13 +77,21 @@ const ChallengeCard = ({ challenge }: ChallengeCardProps) => {
             </div>
         </div>
       </CardContent>
-      <CardFooter>
-        <Link 
-          href={`/student/challenges/${challenge.id}`} 
-          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white text-center font-semibold py-3 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-[1.02]"
-        >
-            Try Challenge
-        </Link>
+      <CardFooter className="pt-4">
+        <div className="w-full flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+              <span>Available</span>
+            </div>
+          </div>
+          <Link 
+            href={`/student/challenges/${challenge.id}`} 
+            className="text-blue-600 hover:text-blue-700 font-medium text-sm hover:underline transition-colors duration-200"
+          >
+            View Details →
+          </Link>
+        </div>
       </CardFooter>
     </Card>
   );

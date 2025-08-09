@@ -1,13 +1,13 @@
 'use client'
 
-import { ArrowRight, Target, Zap, TrendingUp, BookOpen } from 'lucide-react'
+import { ArrowRight, Bot, Zap, TrendingUp, MessageSquare } from 'lucide-react'
 
 const tools = [
   {
-    id: 'career-battle',
-    title: 'Career Battle',
-    description: 'Compare two careers side by side with salary, work-life balance, growth prospects, and day-to-day tasks.',
-    icon: Target,
+    id: 'chatbot',
+    title: 'AI Career Chatbot',
+    description: 'Get personalized career guidance and answers to your questions through our intelligent AI assistant.',
+    icon: Bot,
     color: 'orange',
     bgColor: 'bg-slate-800/90 backdrop-blur-sm',
     borderColor: 'border-slate-600/50',
@@ -37,10 +37,10 @@ const tools = [
     buttonColor: 'bg-gradient-to-r from-success-400 to-success-500 hover:from-success-500 hover:to-success-600'
   },
   {
-    id: 'self-discovery',
-    title: 'Self-Discovery Journal',
-    description: 'Reflect on your interests, values, and goals through guided prompts before making career choices.',
-    icon: BookOpen,
+    id: 'mentor-connect',
+    title: 'Mentor Connect',
+    description: 'Connect with experienced professionals and get real-time answers to your career questions.',
+    icon: MessageSquare,
     color: 'purple',
     bgColor: 'bg-slate-800/90 backdrop-blur-sm',
     borderColor: 'border-slate-600/50',
@@ -98,10 +98,10 @@ const CareerToolsSection = () => {
                       onClick={() => handleToolClick(tool.id)}
                       className={`${tool.buttonColor} text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold transition-all duration-300 inline-flex items-center gap-2 hover:scale-105 hover:shadow-lg text-sm sm:text-base`}
                     >
-                      {tool.id === 'career-battle' && 'Start Comparing'}
+                      {tool.id === 'chatbot' && 'Start Chatting'}
                       {tool.id === 'career-simulation' && 'Try a Challenge'}
                       {tool.id === 'visual-life-graph' && 'Build My Graph'}
-                      {tool.id === 'self-discovery' && 'Start Reflecting'}
+                      {tool.id === 'mentor-connect' && 'Connect Now'}
                       <ArrowRight size={16} />
                     </button>
                   </div>

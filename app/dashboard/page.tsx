@@ -3,7 +3,7 @@
 import { useUser } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
-import { BookOpen, Target, TrendingUp, Users, MessageSquare, Bot, Play, BarChart3, Sparkles, Zap, Trophy, Brain, Library, ExternalLink, FileText, Video, Globe, Award, Clock } from 'lucide-react'
+import { BookOpen, Target, TrendingUp, Users, MessageSquare, Bot, Play, BarChart3, Sparkles, Zap, Trophy, Brain, Library, ExternalLink, FileText, Video, Globe, Award, Clock, ArrowRight } from 'lucide-react'
 import StudentQuestions from '@/components/StudentQuestions'
 import CareerChatBot from '@/components/CareerChatBot'
 import CareerSimulation from '@/components/CareerSimulation'
@@ -515,6 +515,62 @@ function ResourcesSection() {
   )
 }
 
+// Helper function to get active tab classes
+const getActiveTabClasses = (color: string) => {
+  const colorMap: { [key: string]: string } = {
+    blue: 'text-blue-600 bg-gradient-to-r from-blue-50 to-blue-100/50',
+    emerald: 'text-emerald-600 bg-gradient-to-r from-emerald-50 to-emerald-100/50',
+    purple: 'text-purple-600 bg-gradient-to-r from-purple-50 to-purple-100/50',
+    orange: 'text-orange-600 bg-gradient-to-r from-orange-50 to-orange-100/50',
+    pink: 'text-pink-600 bg-gradient-to-r from-pink-50 to-pink-100/50',
+    indigo: 'text-indigo-600 bg-gradient-to-r from-indigo-50 to-indigo-100/50'
+  }
+  return colorMap[color] || 'text-blue-600 bg-gradient-to-r from-blue-50 to-blue-100/50'
+}
+
+// Helper function to get icon background classes
+const getIconBgClasses = (color: string, isActive: boolean) => {
+  if (!isActive) return 'bg-gray-100 group-hover:bg-gray-200'
+  
+  const colorMap: { [key: string]: string } = {
+    blue: 'bg-blue-100 shadow-lg',
+    emerald: 'bg-emerald-100 shadow-lg',
+    purple: 'bg-purple-100 shadow-lg',
+    orange: 'bg-orange-100 shadow-lg',
+    pink: 'bg-pink-100 shadow-lg',
+    indigo: 'bg-indigo-100 shadow-lg'
+  }
+  return colorMap[color] || 'bg-blue-100 shadow-lg'
+}
+
+// Helper function to get icon text classes
+const getIconTextClasses = (color: string, isActive: boolean) => {
+  if (!isActive) return 'text-gray-600'
+  
+  const colorMap: { [key: string]: string } = {
+    blue: 'text-blue-600',
+    emerald: 'text-emerald-600',
+    purple: 'text-purple-600',
+    orange: 'text-orange-600',
+    pink: 'text-pink-600',
+    indigo: 'text-indigo-600'
+  }
+  return colorMap[color] || 'text-blue-600'
+}
+
+// Helper function to get bottom border classes
+const getBottomBorderClasses = (color: string) => {
+  const colorMap: { [key: string]: string } = {
+    blue: 'bg-gradient-to-r from-blue-400 to-blue-600',
+    emerald: 'bg-gradient-to-r from-emerald-400 to-emerald-600',
+    purple: 'bg-gradient-to-r from-purple-400 to-purple-600',
+    orange: 'bg-gradient-to-r from-orange-400 to-orange-600',
+    pink: 'bg-gradient-to-r from-pink-400 to-pink-600',
+    indigo: 'bg-gradient-to-r from-indigo-400 to-indigo-600'
+  }
+  return colorMap[color] || 'bg-gradient-to-r from-blue-400 to-blue-600'
+}
+
 export default function Dashboard() {
   const { user, isLoaded } = useUser()
   const router = useRouter()
@@ -591,42 +647,68 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-background-primary pt-20">
+      {/* Background overlay - same as landing page */}
+      <div className="absolute inset-0 opacity-40">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-primary-100/20 to-accent-100/20"></div>
+      </div>
+      
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-xl p-8 mb-8 text-white">
-          <h1 className="text-3xl font-bold mb-2">
-            Welcome back, {user?.firstName || 'Student'}! 👋
-          </h1>
-          <p className="text-blue-100 text-lg">
-            Ready to continue your career journey? Let&apos;s explore new opportunities and insights.
-          </p>
+        <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 rounded-3xl shadow-2xl p-8 mb-8 text-white">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 to-purple-600/90"></div>
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-4xl font-bold mb-3 text-white">
+                  Welcome back, {user?.firstName || 'Student'}! 
+                  <span className="inline-block ml-2 text-4xl filter drop-shadow-lg">👋</span>
+                </h1>
+                <p className="text-blue-100 text-xl font-medium">
+                  Ready to continue your career journey? Let&apos;s explore new opportunities and insights.
+                </p>
+              </div>
+              <div className="hidden lg:block">
+                <div className="w-24 h-24 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                  <Sparkles className="w-12 h-12 text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-xl shadow-lg mb-8 border border-gray-200">
-          <div className="flex overflow-x-auto">
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl mb-8 border border-white/20 overflow-hidden">
+          <div className="flex overflow-x-auto scrollbar-hide">
             {[
-              { id: 'overview', label: 'Overview', icon: BarChart3 },
-              { id: 'career-guide', label: 'Career Guide', icon: Bot },
-              { id: 'simulation', label: 'Career Simulation', icon: Play },
-              { id: 'life-graph', label: 'Visual Life Graph', icon: TrendingUp },
-              { id: 'mentor-connect', label: 'Mentor Connect', icon: MessageSquare },
-              { id: 'resources', label: 'Resources', icon: Library }
+              { id: 'overview', label: 'Overview', icon: BarChart3, color: 'blue' },
+              { id: 'career-guide', label: 'Career Guide', icon: Bot, color: 'emerald' },
+              { id: 'simulation', label: 'Career Simulation', icon: Play, color: 'purple' },
+              { id: 'life-graph', label: 'Visual Life Graph', icon: TrendingUp, color: 'orange' },
+              { id: 'mentor-connect', label: 'Mentor Connect', icon: MessageSquare, color: 'pink' },
+              { id: 'resources', label: 'Resources', icon: Library, color: 'indigo' }
             ].map((tab) => {
               const IconComponent = tab.icon
+              const isActive = activeTab === tab.id
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                      : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                  className={`relative flex items-center gap-3 px-6 py-4 font-semibold transition-all duration-300 whitespace-nowrap group ${
+                    isActive
+                      ? getActiveTabClasses(tab.color)
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50/50'
                   }`}
                 >
-                  <IconComponent size={18} />
-                  {tab.label}
+                  <div className={`p-2 rounded-xl transition-all duration-300 ${getIconBgClasses(tab.color, isActive)}`}>
+                    <IconComponent size={18} className={getIconTextClasses(tab.color, isActive)} />
+                  </div>
+                  <span className="hidden sm:block">{tab.label}</span>
+                  {isActive && (
+                    <div className={`absolute bottom-0 left-0 right-0 h-1 ${getBottomBorderClasses(tab.color)} rounded-t-full`}></div>
+                  )}
                 </button>
               )
             })}
@@ -636,50 +718,58 @@ export default function Dashboard() {
         {/* Stats Cards - Only show on overview */}
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center">
-                <div className="p-3 bg-blue-100 rounded-xl">
-                  <Target className="h-6 w-6 text-blue-600" />
+            <div className="group relative overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100/50 rounded-2xl shadow-xl p-6 border border-blue-200/50 hover:shadow-2xl hover:scale-105 transition-all duration-500">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/10 to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-blue-700 mb-1">Simulations Completed</p>
+                  <p className="text-3xl font-bold text-blue-900">12</p>
+                  <p className="text-xs text-blue-600 mt-1">+3 this week</p>
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Simulations Completed</p>
-                  <p className="text-2xl font-bold text-gray-900">12</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center">
-                <div className="p-3 bg-green-100 rounded-xl">
-                  <TrendingUp className="h-6 w-6 text-green-600" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Career Score</p>
-                  <p className="text-2xl font-bold text-gray-900">85%</p>
+                <div className="p-4 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg">
+                  <Target className="h-8 w-8 text-white" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center">
-                <div className="p-3 bg-purple-100 rounded-xl">
-                  <BookOpen className="h-6 w-6 text-purple-600" />
+            <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-2xl shadow-xl p-6 border border-emerald-200/50 hover:shadow-2xl hover:scale-105 transition-all duration-500">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/10 to-emerald-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-emerald-700 mb-1">Career Score</p>
+                  <p className="text-3xl font-bold text-emerald-900">85%</p>
+                  <p className="text-xs text-emerald-600 mt-1">Excellent progress</p>
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Courses Enrolled</p>
-                  <p className="text-2xl font-bold text-gray-900">5</p>
+                <div className="p-4 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl shadow-lg">
+                  <TrendingUp className="h-8 w-8 text-white" />
                 </div>
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200 hover:shadow-xl transition-all duration-300">
-              <div className="flex items-center">
-                <div className="p-3 bg-orange-100 rounded-xl">
-                  <Users className="h-6 w-6 text-orange-600" />
+            <div className="group relative overflow-hidden bg-gradient-to-br from-purple-50 to-purple-100/50 rounded-2xl shadow-xl p-6 border border-purple-200/50 hover:shadow-2xl hover:scale-105 transition-all duration-500">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-400/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-purple-700 mb-1">Courses Enrolled</p>
+                  <p className="text-3xl font-bold text-purple-900">5</p>
+                  <p className="text-xs text-purple-600 mt-1">2 in progress</p>
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">Mentor Sessions</p>
-                  <p className="text-2xl font-bold text-gray-900">3</p>
+                <div className="p-4 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg">
+                  <BookOpen className="h-8 w-8 text-white" />
+                </div>
+              </div>
+            </div>
+
+            <div className="group relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100/50 rounded-2xl shadow-xl p-6 border border-orange-200/50 hover:shadow-2xl hover:scale-105 transition-all duration-500">
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-400/10 to-orange-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div className="relative z-10 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-orange-700 mb-1">Mentor Sessions</p>
+                  <p className="text-3xl font-bold text-orange-900">3</p>
+                  <p className="text-xs text-orange-600 mt-1">1 scheduled</p>
+                </div>
+                <div className="p-4 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl shadow-lg">
+                  <Users className="h-8 w-8 text-white" />
                 </div>
               </div>
             </div>
@@ -692,40 +782,58 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Quick Actions */}
               <div className="space-y-6">
-                <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Sparkles className="text-blue-600" size={20} />
+                <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20 overflow-hidden relative">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full -translate-y-16 translate-x-16"></div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3 relative z-10">
+                    <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl shadow-lg">
+                      <Sparkles className="text-white" size={24} />
+                    </div>
                     Quick Actions
                   </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-4 relative z-10">
                     <button
                       onClick={() => setActiveTab('career-guide')}
-                      className="w-full flex items-center gap-3 p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors text-left"
+                      className="group w-full flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-blue-100/50 hover:from-blue-100 hover:to-blue-200/50 rounded-2xl transition-all duration-300 text-left border border-blue-200/50 hover:shadow-xl hover:scale-[1.02]"
                     >
-                      <Bot className="text-blue-600" size={20} />
-                      <div>
-                        <p className="font-medium text-gray-900">Ask Career Guide</p>
-                        <p className="text-sm text-gray-600">Get instant AI-powered career advice</p>
+                      <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
+                        <Bot className="text-white" size={24} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-bold text-gray-900 text-lg">Ask Career Guide</p>
+                        <p className="text-sm text-blue-700 font-medium">Get instant AI-powered career advice</p>
+                      </div>
+                      <div className="text-blue-600 group-hover:translate-x-1 transition-transform duration-300">
+                        <ArrowRight size={20} />
                       </div>
                     </button>
                     <button
                       onClick={() => setActiveTab('simulation')}
-                      className="w-full flex items-center gap-3 p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors text-left"
+                      className="group w-full flex items-center gap-4 p-4 bg-gradient-to-r from-emerald-50 to-emerald-100/50 hover:from-emerald-100 hover:to-emerald-200/50 rounded-2xl transition-all duration-300 text-left border border-emerald-200/50 hover:shadow-xl hover:scale-[1.02]"
                     >
-                      <Play className="text-green-600" size={20} />
-                      <div>
-                        <p className="font-medium text-gray-900">Try Career Simulation</p>
-                        <p className="text-sm text-gray-600">Experience real career tasks</p>
+                      <div className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
+                        <Play className="text-white" size={24} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-bold text-gray-900 text-lg">Try Career Simulation</p>
+                        <p className="text-sm text-emerald-700 font-medium">Experience real career tasks</p>
+                      </div>
+                      <div className="text-emerald-600 group-hover:translate-x-1 transition-transform duration-300">
+                        <ArrowRight size={20} />
                       </div>
                     </button>
                     <button
                       onClick={() => setActiveTab('life-graph')}
-                      className="w-full flex items-center gap-3 p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors text-left"
+                      className="group w-full flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-purple-100/50 hover:from-purple-100 hover:to-purple-200/50 rounded-2xl transition-all duration-300 text-left border border-purple-200/50 hover:shadow-xl hover:scale-[1.02]"
                     >
-                      <TrendingUp className="text-purple-600" size={20} />
-                      <div>
-                        <p className="font-medium text-gray-900">Build Life Graph</p>
-                        <p className="text-sm text-gray-600">Visualize your 10-year career plan</p>
+                      <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
+                        <TrendingUp className="text-white" size={24} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-bold text-gray-900 text-lg">Build Life Graph</p>
+                        <p className="text-sm text-purple-700 font-medium">Visualize your 10-year career plan</p>
+                      </div>
+                      <div className="text-purple-600 group-hover:translate-x-1 transition-transform duration-300">
+                        <ArrowRight size={20} />
                       </div>
                     </button>
                   </div>
@@ -733,28 +841,49 @@ export default function Dashboard() {
               </div>
 
               {/* Recent Activity */}
-              <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Trophy className="text-yellow-600" size={20} />
+              <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20 overflow-hidden relative">
+                <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-yellow-400/20 to-orange-400/20 rounded-full -translate-y-16 -translate-x-16"></div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3 relative z-10">
+                  <div className="p-2 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl shadow-lg">
+                    <Trophy className="text-white" size={24} />
+                  </div>
                   Recent Achievements
                 </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
-                    <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
-                      <Trophy size={16} className="text-yellow-600" />
+                <div className="space-y-4 relative z-10">
+                  <div className="group flex items-center gap-4 p-4 bg-gradient-to-r from-yellow-50 to-orange-50/50 rounded-2xl border border-yellow-200/50 hover:shadow-lg transition-all duration-300">
+                    <div className="p-3 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
+                      <Trophy size={20} className="text-white" />
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Completed Software Dev Challenge</p>
-                      <p className="text-sm text-gray-600">Earned 100 points • 2 hours ago</p>
+                    <div className="flex-1">
+                      <p className="font-bold text-gray-900">Completed Software Dev Challenge</p>
+                      <p className="text-sm text-yellow-700 font-medium">Earned 100 points • 2 hours ago</p>
+                    </div>
+                    <div className="px-3 py-1 bg-yellow-100 rounded-full">
+                      <span className="text-xs font-bold text-yellow-800">+100 XP</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <Brain size={16} className="text-blue-600" />
+                  <div className="group flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50/50 rounded-2xl border border-blue-200/50 hover:shadow-lg transition-all duration-300">
+                    <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
+                      <Brain size={20} className="text-white" />
                     </div>
-                    <div>
-                      <p className="font-medium text-gray-900">Career Assessment Completed</p>
-                      <p className="text-sm text-gray-600">Discovered 3 new career matches • 1 day ago</p>
+                    <div className="flex-1">
+                      <p className="font-bold text-gray-900">Career Assessment Completed</p>
+                      <p className="text-sm text-blue-700 font-medium">Discovered 3 new career matches • 1 day ago</p>
+                    </div>
+                    <div className="px-3 py-1 bg-blue-100 rounded-full">
+                      <span className="text-xs font-bold text-blue-800">NEW</span>
+                    </div>
+                  </div>
+                  <div className="group flex items-center gap-4 p-4 bg-gradient-to-r from-emerald-50 to-green-50/50 rounded-2xl border border-emerald-200/50 hover:shadow-lg transition-all duration-300">
+                    <div className="p-3 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
+                      <MessageSquare size={20} className="text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-bold text-gray-900">Connected with Mentor</p>
+                      <p className="text-sm text-emerald-700 font-medium">Started conversation with Dr. Smith • 3 days ago</p>
+                    </div>
+                    <div className="px-3 py-1 bg-emerald-100 rounded-full">
+                      <span className="text-xs font-bold text-emerald-800">ACTIVE</span>
                     </div>
                   </div>
                 </div>
