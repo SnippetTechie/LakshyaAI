@@ -6,12 +6,8 @@ import { CheckCircle, Clock, Award } from 'lucide-react';
 
 type ChallengePageParams = { challengeId: string };
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<ChallengePageParams>;
-}) {
-  const { challengeId } = await params;
+export default async function Page({ params }: { params: ChallengePageParams }) {
+  const { challengeId } = params;
   const challenge = getChallengeById(challengeId);
 
   if (!challenge) {
@@ -27,9 +23,13 @@ export default async function Page({
     yellow: 'border-yellow-500',
   };
 
+  // Derive a color variant deterministically since Challenge has no `color` field
+  const variantKeys = Object.keys(colorVariants) as (keyof typeof colorVariants)[];
+  const derivedKey = variantKeys[(Number(challenge.id) || 0) % variantKeys.length];
+
   return (
     <div className="container mx-auto py-12 px-4">
-      <Card className={`max-w-4xl mx-auto ${colorVariants[challenge.color as keyof typeof colorVariants]} border-t-4`}>
+      <Card className={`max-w-4xl mx-auto ${colorVariants[derivedKey]} border-t-4`}>
         <CardHeader>
           <Badge variant="secondary" className="w-fit mb-2">{challenge.career}</Badge>
           <CardTitle className="text-4xl font-bold">{challenge.title}</CardTitle>
@@ -54,10 +54,10 @@ export default async function Page({
           <div className="mt-8">
             <h3 className="text-xl font-semibold mb-4">Skills you'll practice</h3>
             <div className="flex flex-wrap gap-2">
-              {challenge.skills.map(skill => (
-                <Badge key={skill.name} variant="outline" className="flex items-center gap-2 py-1 px-3">
+              {challenge.skills.map((skill) => (
+                <Badge key={skill} variant="outline" className="flex items-center gap-2 py-1 px-3">
                   <CheckCircle className="w-4 h-4 text-green-500" />
-                  <span>{skill.name}</span>
+                  <span>{skill}</span>
                 </Badge>
               ))}
             </div>
