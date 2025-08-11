@@ -4,14 +4,15 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, Clock, Award } from 'lucide-react';
 
-interface ChallengePageProps {
-  params: {
-    challengeId: string;
-  };
-}
+type ChallengePageParams = { challengeId: string };
 
-const ChallengePage = ({ params }: ChallengePageProps) => {
-  const challenge = getChallengeById(params.challengeId);
+export default async function Page({
+  params,
+}: {
+  params: Promise<ChallengePageParams>;
+}) {
+  const { challengeId } = await params;
+  const challenge = getChallengeById(challengeId);
 
   if (!challenge) {
     notFound();
@@ -80,6 +81,4 @@ const ChallengePage = ({ params }: ChallengePageProps) => {
       </Card>
     </div>
   );
-};
-
-export default ChallengePage;
+}
