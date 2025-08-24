@@ -2,27 +2,36 @@
 
 ### 🏠 Modern & Intuitive Interface
 ![Homepage](./Images/home.png)
+
 A clean, user-friendly interface that makes career exploration simple and engaging for students of all backgrounds.
+***
 
 ### 🎓 Student Dashboard
 ![Student Dashboard](./Images/student-dashboard.png)
+
 Track your career journey, access learning resources, and monitor your progress all in one place.
+***
 
 ### 👨‍🏫 Mentor Dashboard
 ![Mentor Dashboard](./Images/mentor-dashboard.png)
-Mentors can efficiently manage student queries and provide personalized guidance through an organized dashboard.
 
+Mentors can efficiently manage student queries and provide personalized guidance through an organized dashboard.
+***
 ### 💬 AI-Powered Career Chat
 ![Career Chat](./Images/chat-bot.png)
-Get instant, intelligent career advice from our AI assistant, available 24/7 to answer your questions.
 
+Get instant, intelligent career advice from our AI assistant, available 24/7 to answer your questions.
+***
 ### 🎮 Career Simulation
 ![Career Simulation](./Images/career-simualtion.png)
-Experience different career paths through interactive simulations and real-world scenarios.
 
+Experience different career paths through interactive simulations and real-world scenarios.
+***
 ### 📚 Learning Resources
 ![Resources](./Images/resources.png)
+
 Access a curated collection of resources to support your career development journey.
+
 
 ## 🛠️ Tech Stack
 
