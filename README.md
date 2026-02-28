@@ -197,6 +197,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 
-**Built with ❤️ for India's youth by the LakshyaAI team**
+**Built with ❤️ for India's youth by Tahir**
 
 *Empowering the next generation with career clarity and confidence* 🚀
