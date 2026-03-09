@@ -110,11 +110,6 @@ For real-time Q&A features, set up Redis:
 redis-server
 ```
 
-**Option B: Railway Redis (Recommended)**
-1. Visit [Railway.app](https://railway.app)
-2. Create a new Redis service
-3. Copy the connection URL to your `.env.local`
-
 ### **6. Run Development Server**
 ```bash
 npm run dev
