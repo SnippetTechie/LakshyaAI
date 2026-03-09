@@ -49,19 +49,6 @@ Access a curated collection of resources to support your career development jour
 3. Set up environment variables
 4. Run development server: `npm run dev`
 
-## 📁 Project Structure
-
-```
-LakshyaAI/
-├── app/          # Next.js app directory
-├── components/   # Reusable components
-├── hooks/        # Custom hooks
-├── lib/          # Utilities and configs
-├── prisma/       # Database schema
-├── public/       # Static files
-└── Images/       # Project screenshots
-```
-
 ## 🚀 Getting Started
 
 ### **Prerequisites**
