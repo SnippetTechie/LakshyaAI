@@ -40,7 +40,6 @@ Access a curated collection of resources to support your career development jour
 - **AI**: Google Gemini Pro
 - **Authentication**: Clerk
 - **Real-time**: Redis
-- **Deployment**: Vercel + Railway
 
 ## 🚀 Quick Start
 
